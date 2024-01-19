@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
 
 /**
@@ -24,9 +25,9 @@ public class ChessPiece {
     }
 
     private ChessGame.TeamColor pieceColor;
-    private ChessPiece.PieceType type;
+    private PieceType type;
 
-    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+    public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
     }
@@ -66,6 +67,44 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        Collection<ChessMove> result = new HashSet<>();
+        ChessPiece piece_in_question = board.chessboard[myPosition.getRow() - 1][myPosition.getColumn() - 1];
+        int row = myPosition.getRow() - 1;
+        int column = myPosition.getColumn() - 1;
+        switch (piece_in_question.getPieceType()) {
+            case KING -> {
+                for (int row1 = row - 1; row1 <= row + 1; row1++) {
+                    if (row1 < 0 || row1 >= 8) {
+                        continue;
+                    } else {
+                        for (int column1 = column - 1; column1 <= column + 1; column1++) {
+                            if (column1 < 0 || column1 >= 8 || (row1 == row && column1 == column)) {
+                                continue;
+                            } else {
+                                if (board.chessboard[row1][column1] == null || !board.chessboard[row1][column1].getTeamColor().equals(piece_in_question.getTeamColor())) {
+                                    result.add(new ChessMove(new ChessPosition(row + 1, column + 1), new ChessPosition(row1 + 1, column1 + 1), null));
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+//            case QUEEN -> {
+//
+//            }
+//            }
+            case BISHOP -> {
+
+            }
+//            case KNIGHT -> {
+//            }
+//            case ROOK -> {
+//            }
+//            case PAWN -> {
+//            }
+        }
+
+        return result;
     }
 }
