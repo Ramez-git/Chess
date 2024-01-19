@@ -377,7 +377,7 @@ public class ChessPiece {
             }
 
             case PAWN -> {
-
+            if(piece_in_question.getTeamColor().equals(pieceColor.WHITE)){
                 if (board.chessboard[row + 1][column] == null) {
                     if (row == 6) {
                         result.add(new ChessMove(new ChessPosition(row + 1, column + 1), new ChessPosition(row + 2, column + 1), PieceType.QUEEN));
@@ -385,12 +385,11 @@ public class ChessPiece {
                         result.add(new ChessMove(new ChessPosition(row + 1, column + 1), new ChessPosition(row + 2, column + 1), PieceType.KNIGHT));
                         result.add(new ChessMove(new ChessPosition(row + 1, column + 1), new ChessPosition(row + 2, column + 1), PieceType.BISHOP));
 
-                    }
-                    else{
+                    } else {
                         result.add(new ChessMove(new ChessPosition(row + 1, column + 1), new ChessPosition(row + 2, column + 1), null));
 
                     }
-                    if(row ==1 && board.chessboard[row+2][column] == null) {
+                    if (row == 1 && board.chessboard[row + 2][column] == null) {
                         result.add(new ChessMove(new ChessPosition(row + 1, column + 1), new ChessPosition(row + 3, column + 1), null));
 
                     }
@@ -405,6 +404,46 @@ public class ChessPiece {
                 }
 
             }
+            else{
+                if (board.chessboard[row - 1][column] == null) {
+                    if (row == 1) {
+                        result.add(new ChessMove(new ChessPosition(row + 1, column + 1), new ChessPosition(row , column + 1), PieceType.QUEEN));
+                        result.add(new ChessMove(new ChessPosition(row + 1, column + 1), new ChessPosition(row , column + 1), PieceType.ROOK));
+                        result.add(new ChessMove(new ChessPosition(row + 1, column + 1), new ChessPosition(row , column + 1), PieceType.KNIGHT));
+                        result.add(new ChessMove(new ChessPosition(row + 1, column + 1), new ChessPosition(row , column + 1), PieceType.BISHOP));
+
+                    } else {
+                        result.add(new ChessMove(new ChessPosition(row + 1, column + 1), new ChessPosition(row , column + 1), null));
+
+                    }
+                    if (row == 6 && board.chessboard[row - 2][column] == null) {
+                        result.add(new ChessMove(new ChessPosition(row + 1, column + 1), new ChessPosition(row - 1, column + 1), null));
+
+                    }
+
+                }
+
+                if (board.chessboard[row-1][column + 1] != null && !board.chessboard[row-1][column + 1].getTeamColor().equals(piece_in_question.getTeamColor())&& row==1) {
+                    result.add(new ChessMove(new ChessPosition(row + 1, column + 1), new ChessPosition(row , column + 2), PieceType.QUEEN));
+                    result.add(new ChessMove(new ChessPosition(row + 1, column + 1), new ChessPosition(row , column + 2), PieceType.ROOK));
+                    result.add(new ChessMove(new ChessPosition(row + 1, column + 1), new ChessPosition(row , column + 2), PieceType.KNIGHT));
+                    result.add(new ChessMove(new ChessPosition(row + 1, column + 1), new ChessPosition(row , column + 2), PieceType.BISHOP));
+
+                }
+                else if(board.chessboard[row-1 ][column + 1] != null && !board.chessboard[row-1 ][column + 1].getTeamColor().equals(piece_in_question.getTeamColor())) {
+                    result.add(new ChessMove(new ChessPosition(row + 1, column + 1), new ChessPosition(row , column + 2), null));
+                }
+                if (board.chessboard[row-1][column - 1] != null && !board.chessboard[row-1][column - 1].getTeamColor().equals(piece_in_question.getTeamColor())&&row==1) {
+                    result.add(new ChessMove(new ChessPosition(row + 1, column + 1), new ChessPosition(row , column ), PieceType.QUEEN));
+                    result.add(new ChessMove(new ChessPosition(row + 1, column + 1), new ChessPosition(row , column), PieceType.ROOK));
+                    result.add(new ChessMove(new ChessPosition(row + 1, column + 1), new ChessPosition(row , column), PieceType.KNIGHT));
+                    result.add(new ChessMove(new ChessPosition(row + 1, column + 1), new ChessPosition(row , column), PieceType.BISHOP));
+                }
+
+                else if (board.chessboard[row-1][column - 1] != null && !board.chessboard[row-1][column - 1].getTeamColor().equals(piece_in_question.getTeamColor())) {
+                    result.add(new ChessMove(new ChessPosition(row + 1, column + 1), new ChessPosition(row , column), null));
+                }
+            }}
 
         }
         return result;
