@@ -384,7 +384,7 @@ public class ChessPiece {
             case PAWN -> {
                 int row1 = row;
                 int column1 = column;
-                if (board.chessboard[row1+1][column1] == null) {
+                if (board.chessboard[row1-1][column1] == null) {
                     if (row1 + 1 == 7) {
                         result.add(new ChessMove(new ChessPosition(row + 1, column + 1), new ChessPosition(row1 + 2, column1 + 1), PieceType.QUEEN));
                         result.add(new ChessMove(new ChessPosition(row + 1, column + 1), new ChessPosition(row1 + 2, column1 + 1), PieceType.ROOK));
@@ -394,7 +394,7 @@ public class ChessPiece {
                         result.add(new ChessMove(new ChessPosition(row + 1, column + 1), new ChessPosition(row1 + 2, column1 + 1), null));
                     }
                 }
-                if ((row1<7 && column1<7)&& !(board.chessboard[row1+1][column1+1] == null) && !board.chessboard[row1 + 1][column1 + 1].getTeamColor().equals(piece_in_question.getTeamColor())) {
+                if ((row1<7 && column1<7)&& !(board.chessboard[row1-1][column1-1] == null) && !board.chessboard[row1 -1][column1 -1].getTeamColor().equals(piece_in_question.getTeamColor())) {
                     result.add(new ChessMove(new ChessPosition(row + 1, column + 1), new ChessPosition(row1 + 2, column1 + 2), null));
                 }
             }
