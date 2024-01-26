@@ -42,7 +42,7 @@ private int column;
      * 1 codes for the bottom row
      */
     public int getRow() {
-        return row;
+        return row-1;
     }
 
     /**
@@ -50,6 +50,6 @@ private int column;
      * 1 codes for the left row
      */
     public int getColumn() {
-        return column;
+        return column-1;
     }
 }

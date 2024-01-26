@@ -63,9 +63,9 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> result = new HashSet<>();
-        ChessPiece piece_in_question = board.chessboard[myPosition.getRow() - 1][myPosition.getColumn() - 1];
-        int row = myPosition.getRow() - 1;
-        int column = myPosition.getColumn() - 1;
+        ChessPiece piece_in_question = board.chessboard[myPosition.getRow()][myPosition.getColumn()];
+        int row = myPosition.getRow();
+        int column = myPosition.getColumn();
         switch (piece_in_question.getPieceType()) {
             case KING -> {
                 for (int row1 = row - 1; row1 <= row + 1; row1++) {
