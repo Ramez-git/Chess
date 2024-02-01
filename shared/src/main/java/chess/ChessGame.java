@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 
+import static java.awt.geom.Path2D.contains;
+
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -104,7 +106,17 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        Collection<ChessMove> myvalidmoves=validMoves(move.getStartPosition());
+        if(myvalidmoves.contains(move)){
+            ChessPiece mypiece = board.getPiece(move.getStartPosition());
+            board.removePiece(move.getStartPosition());
+            board.removePiece(move.getEndPosition());
+            if(move.getPromotionPiece() == null){
+            board.addPiece(move.getEndPosition(),mypiece);}
+            else{
+                board.addPiece(move.getEndPosition(),new ChessPiece(mypiece.getTeamColor(),move.getPromotionPiece()));
+            }
+        }
     }
 
     /**
