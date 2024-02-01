@@ -71,9 +71,30 @@ public class ChessGame {
             ChessPiece Mypiece = board.getPiece(startPosition);
             TeamColor myColor = board.getPiece(startPosition).getTeamColor();
             for(var move: Mypiece.pieceMoves(board,startPosition)){
-                
+                ChessPosition mystart = move.getStartPosition();
+                ChessPosition myend = move.getEndPosition();
+                board.removePiece(mystart);
+                var possibleotherpiece = board.getPiece(myend);
+                board.removePiece(myend);
+                board.addPiece(myend,Mypiece);
+                if(!isInCheck(myColor)){
+                    result.add(move);
+                    board.removePiece(myend);
+                    board.addPiece(mystart,Mypiece);
+                    if(possibleotherpiece !=null){
+                        board.addPiece(myend,possibleotherpiece);
+                    }
+                }
+                else{
+                    board.removePiece(myend);
+                    board.addPiece(mystart,Mypiece);
+                    if(possibleotherpiece !=null){
+                        board.addPiece(myend,possibleotherpiece);
+                    }
+                }
             }
         }
+        return result;
     }
 
     /**

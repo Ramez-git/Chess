@@ -97,4 +97,9 @@ public class ChessBoard {
         chessboard[6][6] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
         chessboard[6][7] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
     }
+
+
+    public void removePiece(ChessPosition myPosition){
+        chessboard[myPosition.getRow()][myPosition.getColumn()]=null;
+    }
 }
