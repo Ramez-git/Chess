@@ -63,6 +63,7 @@ public class ChessGame {
         }
         else{
             turn = TeamColor.WHITE;
+
         }
     }
 
@@ -169,7 +170,38 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+
+        if(isInCheck(turn)){
+            ChessPiece myKing = null;
+            ChessPosition mypos1=null;
+            for (int row = 1; row <= 8; row++) {
+                for (int column = 1; column <= 8; column++) {
+                    ChessPosition mypos=new ChessPosition(row,column);
+                    ChessPiece Pieceinquestion = board.getPiece(mypos);
+                    if (Pieceinquestion!= null && Pieceinquestion.getPieceType() == ChessPiece.PieceType.KING && Pieceinquestion.getTeamColor() == teamColor) {
+                        myKing = board.getPiece(mypos);
+                        mypos1=mypos;
+                    }
+                }
+            }
+            for(var move:myKing.pieceMoves(board,mypos1)) {
+                ChessPosition mystart = move.getStartPosition();
+                ChessPosition myend = move.getEndPosition();
+                board.removePiece(mystart);
+                var possibleotherpiece = board.getPiece(myend);
+                board.removePiece(myend);
+                board.addPiece(myend, myKing);
+                if (!isInCheck(turn)) {
+                    return false;
+                }
+                board.removePiece(myend);
+                board.addPiece(mystart, myKing);
+                if (possibleotherpiece != null) {
+                    board.addPiece(myend, possibleotherpiece);
+                }
+            }
+        }
+        return true;
     }
 
     /**
