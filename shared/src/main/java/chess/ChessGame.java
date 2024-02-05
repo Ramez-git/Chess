@@ -29,6 +29,8 @@ public class ChessGame {
 
     private TeamColor turn;
     private ChessBoard board;
+    private Collection<ChessPiece> whitemoved;
+    private Collection<ChessPiece> blackmoved;
 
     public ChessGame() {
 
@@ -97,8 +99,32 @@ public class ChessGame {
                     board.addPiece(myend,possibleotherpiece);
                 }
             }
+            Collection<ChessPiece> possible_rooks= new HashSet<>();
+
+            if(Mypiece.getPieceType()== ChessPiece.PieceType.KING && Mypiece.getTeamColor()==TeamColor.WHITE){
+                possible_rooks.add(board.getPiece(new ChessPosition(1,1)));
+                possible_rooks.add(board.getPiece(new ChessPosition(1,8)));
+                for(var rook : possible_rooks){
+                    if(rook!=null){
+                        result.add(Castling(Mypiece,rook));
+                    }
+                }
+
+            } else if (Mypiece.getPieceType()== ChessPiece.PieceType.KING) {
+                possible_rooks.add(board.getPiece(new ChessPosition(8,1)));
+                possible_rooks.add(board.getPiece(new ChessPosition(8,8)));
+                for(var rook : possible_rooks){
+                    if(rook!=null){
+                        result.add(Castling(Mypiece,rook));
+                    }
+                }
+            }
         }
         return result;
+    }
+    public ChessMove Castling(ChessPiece myKing, ChessPiece myRook){
+
+return null;
     }
 
     /**
@@ -114,6 +140,9 @@ public class ChessGame {
         Collection<ChessMove> myvalidmoves=validMoves(move.getStartPosition());
         if(myvalidmoves.contains(move)){
             ChessPiece mypiece = board.getPiece(move.getStartPosition());
+            //implementing castling
+            pieces_moved(board.getPiece(move.getStartPosition()));
+            //done implementing castiling
             board.removePiece(move.getStartPosition());
             board.removePiece(move.getEndPosition());
             switch_turn();
@@ -129,6 +158,17 @@ public class ChessGame {
         }
 
     }
+    public void pieces_moved(ChessPiece Piece){
+        if(Piece != null){
+
+
+        if(Piece.getTeamColor() == TeamColor.WHITE){
+            whitemoved.add(Piece);
+        }
+        else{
+            blackmoved.add(Piece);
+        }
+    }}
 
     /**
      * Determines if the given team is in check
