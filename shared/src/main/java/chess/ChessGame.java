@@ -215,7 +215,7 @@ public class ChessGame {
                 var possibleotherpiece = board.getPiece(myend);
                 board.removePiece(myend);
                 board.addPiece(myend, myKing);
-                if (!isInCheck(teamColor)) {
+                if (!isInCheck(turn)) {
                     return false;
                 }
                 board.removePiece(myend);
@@ -224,9 +224,8 @@ public class ChessGame {
                     board.addPiece(myend, possibleotherpiece);
                 }
             }
-            return true;
         }
-        return false;
+        return true;
     }
 
     /**
