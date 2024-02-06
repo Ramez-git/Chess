@@ -99,6 +99,13 @@ public class ChessGame {
                     board.addPiece(myend, possibleotherpiece);
                 }
             }
+//            if(Mypiece.getPieceType()== ChessPiece.PieceType.PAWN && (startPosition.getRow()==5 ||startPosition.getRow()==3)){
+//                for(int i =1;i<=8;i++){
+//                    if(board.getPiece(new ChessPosition(startPosition.getRow(), i)).getPieceType()== ChessPiece.PieceType.PAWN && board.getPiece(new ChessPosition(startPosition.getRow(), i)).getTeamColor()!=Mypiece.getTeamColor()){
+//                        result.add(new ChessMove(startPosition,new ChessPosition(startPosition.getRow()+1, startPosition.getColumn()+1)))
+//                    }
+//                }
+//            }
         }
         return result;
     }
