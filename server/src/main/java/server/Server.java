@@ -17,6 +17,7 @@ public class Server {
 
         Spark.init();
         Spark.awaitInitialization();
+        //making endpoints
         Spark.post("/user",this::addUser);
         Spark.post("/session",this::loginUser);
         Spark.post("/game",this::createGame);
@@ -24,6 +25,7 @@ public class Server {
         Spark.delete("/db", this::deleteEVERYTHING);
         Spark.put("/game",this::joinGame);
         Spark.get("/game", this::listGames);
+        //end making endpoints
         return Spark.port();
     }
 
@@ -31,7 +33,7 @@ public class Server {
         Spark.stop();
         Spark.awaitStop();
     }
-
+    //functions for endpoints
     private Object addUser(Request req,Response res) throws ResolutionException{
         return new Gson().toJson("acknowledged addUser");
     }
@@ -53,4 +55,5 @@ public class Server {
     private Object deleteEVERYTHING(Request req, Response res) throws ResolutionException{
         return new Gson().toJson("acknowledged deleteEVERYTHING");
     }
+    //end functions for endpointsf
 }
