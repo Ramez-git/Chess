@@ -5,11 +5,14 @@ import com.google.gson.annotations.SerializedName;
 import dataAccess.DataAccessUser;
 import dataAccess.*;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import service.*;
 import spark.*;
 //import MemoryDataAccess.*;
 import java.lang.module.ResolutionException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
 
 public class Server {
@@ -138,7 +141,8 @@ public class Server {
         var myauth = new AuthData(authstr,"");
         try{
             x.getusr(myauth);
-            return g.listGames();
+
+            return new Gson().toJson(new GamesWrapper(g.listGames()));
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
@@ -157,7 +161,15 @@ public class Server {
         var a =authService;
         try{
             if(Objects.equals(game.playerColor, "WHITE")){
-                g.updateGame(Integer.parseInt(game.gameID),a.getusr(new AuthData(authstr,"")).getusername(),"");
+                var x = Integer.parseInt(game.gameID);
+                var y =a.getusr(new AuthData(authstr,"")).username();
+                g.updateGame(x,y,"check");
+                return new Gson().toJson("it worked");
+            }
+            else{
+                var x = Integer.parseInt(game.gameID);
+                var y =a.getusr(new AuthData(authstr,"")).username();
+                g.updateGame(x,"check",y);
             }
 
         } catch (DataAccessException e) {
@@ -203,4 +215,17 @@ public class Server {
         @SerializedName("message")
         private String message;
     }
+    public class GamesWrapper {
+        @SerializedName("games")
+        private Collection<GameData> games;
+
+        public GamesWrapper(Collection<GameData> games) {
+            this.games = games;
+        }
+
+        public Collection<GameData> getGames() {
+            return games;
+        }
+    }
+
 }

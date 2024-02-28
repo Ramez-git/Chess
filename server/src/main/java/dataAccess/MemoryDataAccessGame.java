@@ -1,9 +1,7 @@
 package dataAccess;
 
 import chess.ChessGame;
-import model.AuthData;
 import model.GameData;
-import model.UserData;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,9 +25,14 @@ public class MemoryDataAccessGame implements DataAccessgame{
     }
     @Override
     public void updateGame(Integer ID,String White,String Black) throws DataAccessException {
-        if(games.containsValue(ID)){
+        if(games.containsKey(ID)){
         var game = games.get(ID);
-        games.put(ID,new GameData(ID,White,Black,game.getgamename(),game.getgame()));
+            if (Black == "check") {
+
+        games.put(ID,new GameData(ID,White,game.blackUsername(),game.getgamename(),game.getgame()));}
+            else{
+                games.put(ID,new GameData(ID, game.whiteUsername(), Black,game.getgamename(),game.getgame()));
+            }
         }
         else{
             throw new DataAccessException("err on updategame");
@@ -37,17 +40,12 @@ public class MemoryDataAccessGame implements DataAccessgame{
     }
 
     @Override
-    public Collection<ChessGame> listGames() throws DataAccessException {
-        Collection<ChessGame> g = new HashSet<>();
+    public Collection<GameData> listGames() throws DataAccessException {
+        Collection<GameData> g = new HashSet<>();
         for(var i : games.values()){
-            g.add(i.game());
+            g.add(i);
         }
         return g;
-    }
-
-    @Override
-    public void deleteSession(AuthData auth) throws DataAccessException {
-
     }
 
     @Override

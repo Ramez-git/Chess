@@ -70,7 +70,7 @@ public class MemoryDataAccessAuth implements DataAccessAuth {
         for (Map.Entry<String, AuthData> entry : auths.entrySet()) {
             String key = entry.getKey();
             AuthData value = entry.getValue();
-            if(value.authToken() == authtok.authToken()){
+            if(Objects.equals(value.authToken(), authtok.getauthtoken())){
                 return value;
             }
         }

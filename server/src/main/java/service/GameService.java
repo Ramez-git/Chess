@@ -1,10 +1,9 @@
 package service;
 
 import chess.ChessGame;
-import dataAccess.DataAccessUser;
 import dataAccess.DataAccessException;
 import dataAccess.DataAccessgame;
-import model.AuthData;
+import model.GameData;
 
 import java.util.Collection;
 
@@ -13,13 +12,8 @@ public class GameService implements DataAccessgame{
     public GameService(DataAccessgame data){
         this.data =data;
     }
-    public Collection<ChessGame> listGames() throws DataAccessException {
+    public Collection<GameData> listGames() throws DataAccessException {
         return data.listGames();
-    }
-
-    @Override
-    public void deleteSession(AuthData auth) throws DataAccessException {
-    data.deleteAll();
     }
 
     @Override
