@@ -7,11 +7,13 @@ import model.GameData;
 
 import java.util.Collection;
 
-public class GameService implements DataAccessgame{
-    private DataAccessgame data;
-    public GameService(DataAccessgame data){
-        this.data =data;
+public class GameService implements DataAccessgame {
+    private final DataAccessgame data;
+
+    public GameService(DataAccessgame data) {
+        this.data = data;
     }
+
     public Collection<GameData> listGames() throws DataAccessException {
         return data.listGames();
     }
@@ -26,10 +28,11 @@ public class GameService implements DataAccessgame{
         data.updateGame(ID, White, Black);
     }
 
-    public Integer createGame(String Gamename) throws DataAccessException{
+    public Integer createGame(String Gamename) throws DataAccessException {
         return data.createGame(Gamename);
     }
-    public void deleteAll() throws DataAccessException{
+
+    public void deleteAll() throws DataAccessException {
         data.deleteAll();
     }
 
