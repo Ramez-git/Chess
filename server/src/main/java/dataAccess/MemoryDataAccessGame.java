@@ -50,7 +50,7 @@ public class MemoryDataAccessGame implements DataAccessgame{
 
     @Override
     public void deleteAll() throws DataAccessException {
-
+    games.clear();
     }
 
 }

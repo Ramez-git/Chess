@@ -122,9 +122,9 @@ public class Server {
             res.status(200);
             return new Gson().toJson("logged out");
         } catch (DataAccessException e) {
-            if(e.getMessage()=="User not logged in thus his authtoken can't be deleted"){
+            if(e.getMessage()=="Error: unauthorized"){
                 res.status(401);
-                res.body(new Gson().toJson("\"message\": \"Error: unauthorized\""));
+                res.body(new Gson().toJson(new message("Error: unauthorized")));
                 return new Gson().toJson("\"message\": \"Error: unauthorized\"");
             }
             else{
@@ -181,10 +181,12 @@ public class Server {
         try{
             var c = authService;
             var g = gameService;
+            var x = userService;
             c.deleteAll();
             g.deleteAll();
+            x.deleteAll();
             res.status(200);
-            return null;
+            return new Gson().toJson("done");
         } catch (DataAccessException e) {
             res.status(500);
             res.body(new Gson().toJson("\"message\": \"Error: description\""));
@@ -214,6 +216,9 @@ public class Server {
     public class message {
         @SerializedName("message")
         private String message;
+        public message(String message){
+            this.message= message;
+        }
     }
     public class GamesWrapper {
         @SerializedName("games")

@@ -5,7 +5,7 @@ import dataAccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
 
-public class UserService {
+public class UserService implements DataAccessUser{
     private DataAccessUser data;
     public UserService(DataAccessUser data){
 
@@ -13,10 +13,15 @@ public class UserService {
     }
     public AuthData CreateUser(UserData user) throws DataAccessException {
 
-        return data.createUser(user);
+        return data.CreateUser(user);
     }
     public AuthData login(UserData user) throws DataAccessException{
-        return data.loginUser(user);
+        return data.login(user);
+    }
+
+    @Override
+    public void deleteAll() throws DataAccessException {
+        data.deleteAll();
     }
 
 }

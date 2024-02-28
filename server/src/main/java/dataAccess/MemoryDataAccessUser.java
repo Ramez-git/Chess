@@ -14,7 +14,7 @@ public class MemoryDataAccessUser implements DataAccessUser {
         this.authService = authService;
     }
     @Override
-    public AuthData createUser(UserData user) throws DataAccessException {
+    public AuthData CreateUser(UserData user) throws DataAccessException {
         if(users.get(user.username())==null){
             users.put(user.username(), user);
             var auth = authService;
@@ -28,7 +28,7 @@ public class MemoryDataAccessUser implements DataAccessUser {
         }
     }
     @Override
-    public AuthData loginUser(UserData user) throws DataAccessException {
+    public AuthData login(UserData user) throws DataAccessException {
         if(users.get(user.username())!=null&& Objects.equals(users.get(user.username()).password(), user.password())){
             var auth = authService;
             var auth1 = auth.createAuth(user);
@@ -42,6 +42,11 @@ public class MemoryDataAccessUser implements DataAccessUser {
         }
 
         return null;
+    }
+
+    @Override
+    public void deleteAll() throws DataAccessException {
+        users.clear();
     }
 
 }

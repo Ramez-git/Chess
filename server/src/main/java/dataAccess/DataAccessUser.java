@@ -2,7 +2,8 @@ package dataAccess;
 import model.*;
 
 public interface DataAccessUser {
-    AuthData createUser(UserData user)throws DataAccessException;
-    AuthData loginUser(UserData user) throws DataAccessException;
+    AuthData CreateUser(UserData user)throws DataAccessException;
+    AuthData login(UserData user) throws DataAccessException;
+    public void deleteAll() throws DataAccessException;
 
 }

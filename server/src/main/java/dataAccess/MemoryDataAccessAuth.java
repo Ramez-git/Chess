@@ -62,7 +62,7 @@ public class MemoryDataAccessAuth implements DataAccessAuth {
 
     @Override
     public void deleteAll() throws DataAccessException {
-
+    auths.clear();
     }
 
 
