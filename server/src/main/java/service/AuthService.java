@@ -20,6 +20,10 @@ public class AuthService {
         data.deleteAll();
     }
     public void deleteSession(AuthData auth) throws DataAccessException {
-        data.deleteAuth(auth);
+        data.deleteSession(auth);
     }
+    public AuthData createAuth(UserData user) throws DataAccessException{
+        return data.createAuth(user);
+    }
+
 }

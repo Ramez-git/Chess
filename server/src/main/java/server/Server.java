@@ -18,12 +18,13 @@ public class Server {
 
 
     public Server(){
-        final DataAccessUser userdata = new MemoryDataAccessUserUser();
+        final DataAccessAuth authdata = new MemoryDataAccessAuth();
+        this.authService=new AuthService(authdata);
+        final DataAccessUser userdata = new MemoryDataAccessUser(authService);
         this.userService = new UserService(userdata);
         final DataAccessgame gamedata = new MemoryDataAccessGame();
         this.gameService = new GameService(gamedata);
-        final DataAccessAuth authdata = new MemoryDataAccessUserAuth();
-        this.authService=new AuthService(authdata);
+
 
 
     }
@@ -113,9 +114,9 @@ public class Server {
         var theauth =req.headers("Authorization");
         var a = authService;
         try{
-            a.deleteSession(new AuthData("",""));
+            a.deleteSession(new AuthData(theauth,""));
             res.status(200);
-            return null;
+            return new Gson().toJson("logged out");
         } catch (DataAccessException e) {
             if(e.getMessage()=="User not logged in thus his authtoken can't be deleted"){
                 res.status(401);
@@ -174,6 +175,16 @@ public class Server {
             return gameName;
         }
 }
+    public class gamecolor {
+        @SerializedName("gamecolor")
+        private String playerColor;
+        private String gameID;
+
+        public String getPlayerColor() {
+            return playerColor;
+        }
+        public String getGameID(){return gameID;}
+    }
     public class message {
         @SerializedName("message")
         private String message;

@@ -14,15 +14,23 @@ public class MemoryDataAccessGame implements DataAccessgame{
     private int id = 0;
     @Override
     public ChessGame getGame(Integer ID) throws DataAccessException {
-        return null;
+        if(games.containsValue(ID)){
+        return games.get(ID).game();
+        }
+        else{
+            throw new DataAccessException("game does not exist");
+        }
     }
     public Integer createGame(String Gamename) throws DataAccessException{
         games.put(id,new GameData(id,"","",Gamename,new ChessGame()));
         return id++;
     }
     @Override
-    public void updateGame(Integer ID) throws DataAccessException {
-
+    public void updateGame(Integer ID,String White,String Black) throws DataAccessException {
+        if(games.containsValue(ID)){
+        var game = games.get(ID);
+        games.put(ID,new GameData(ID,))
+        }
     }
 
     @Override
@@ -36,6 +44,11 @@ public class MemoryDataAccessGame implements DataAccessgame{
 
     @Override
     public void deleteSession(AuthData auth) throws DataAccessException {
+
+    }
+
+    @Override
+    public void deleteAll() throws DataAccessException {
 
     }
 

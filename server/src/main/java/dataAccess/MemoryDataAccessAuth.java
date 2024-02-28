@@ -1,15 +1,14 @@
 package dataAccess;
 
-import chess.ChessGame;
 import model.AuthData;
 import model.UserData;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
-public class MemoryDataAccessUserAuth implements DataAccessAuth {
+public class MemoryDataAccessAuth implements DataAccessAuth {
     final private HashMap<String, AuthData> auths = new HashMap<>();
     public AuthData createAuth(UserData user) throws DataAccessException {
         if (auths.get(user.username()) == null) {
@@ -43,7 +42,22 @@ public class MemoryDataAccessUserAuth implements DataAccessAuth {
 
     @Override
     public void deleteSession(AuthData auth) throws DataAccessException {
-
+        int yup = 0;
+        if(auth.getauthtoken()==null){
+            throw new DataAccessException("Error: description");
+        }
+        for (Map.Entry<String, AuthData> entry : auths.entrySet()) {
+            String username = entry.getKey();
+            AuthData authData = entry.getValue();
+            if(Objects.equals(authData.getauthtoken(), auth.getauthtoken())){
+                auths.remove(authData.username());
+                yup=1;
+                break;
+            }
+    }
+        if(yup==0){
+            throw new DataAccessException("Error: unauthorized");
+        }
     }
 
     @Override
