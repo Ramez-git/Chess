@@ -71,20 +71,20 @@ public class Server {
             if(e.getMessage()=="Error: already taken"){
                 res.status(403);
                 res.body(new Gson().toJson("\"message\": \"Error: already taken\""));
-                return new Gson().toJson("\"message\": \"Error: already taken\"");
+                return new Gson().toJson(new message( "Error: already taken"));
 
             } else if (e.getMessage() =="Error: description" ) {
                 res.status(500);
-                res.body(new Gson().toJson("\"message\": \"Error: description\""));
-                return new Gson().toJson("\"message\": \"Error: description\"");
+                res.body(new Gson().toJson(new message("Error: description")));
+                return new Gson().toJson(new message("Error: description"));
             }
             else if(e.getMessage() == "Error: bad request"){
                 res.status(400);
-                res.body(new Gson().toJson("\"message\": \"Error: bad request\""));
-                return new Gson().toJson("\"message\": \"Error: bad request\"");
+                res.body(new Gson().toJson(new message("Error: bad request")));
+                return new Gson().toJson(new message("Error: bad request"));
             }
             else{
-                return new Gson().toJson("err hanler on createuser");
+                return new Gson().toJson("err handler on createuser");
             }
 
         }
@@ -99,15 +99,15 @@ public class Server {
             res.body(new Gson().toJson(myauth));
             return new Gson().toJson(myauth);
         } catch (DataAccessException e) {
-            if(e.getMessage()=="Error: unauthorized"){
+            if(Objects.equals(e.getMessage(), "Error: unauthorized")){
                 res.status(401);
-                res.body(new Gson().toJson("\"message\": \"Error: unauthorized\""));
-                return new Gson().toJson("\"message\": \"Error: unauthorized\"");
+                res.body(new Gson().toJson(new message( "Error: already taken")));
+                return new Gson().toJson(new message( "Error: already taken"));
 
-            } else if (e.getMessage() =="Error: description" ) {
+            } else if (Objects.equals(e.getMessage(), "Error: description")) {
                 res.status(500);
-                res.body(new Gson().toJson("\"message\": \"Error: description\""));
-                return new Gson().toJson("\"message\": \"Error: description\"");
+                res.body(new Gson().toJson(new message("Error: description")));
+                return new Gson().toJson(new message("Error: description"));
             }
             else{
                 return new Gson().toJson("err handler on login");
@@ -186,7 +186,7 @@ public class Server {
             g.deleteAll();
             x.deleteAll();
             res.status(200);
-            return new Gson().toJson("done");
+            return new Gson().toJson(null);
         } catch (DataAccessException e) {
             res.status(500);
             res.body(new Gson().toJson("\"message\": \"Error: description\""));

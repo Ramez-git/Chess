@@ -23,7 +23,9 @@ public class MemoryDataAccessUser implements DataAccessUser {
         }
         else if(users.get(user.username())!=null){
             throw new DataAccessException("Error: already taken");}
-            else{
+        else if (user.username()==null || user.password()==null || user.email()==null) {
+            throw new DataAccessException("Error: description");
+        } else{
             throw new DataAccessException("Error: bad request");
         }
     }
