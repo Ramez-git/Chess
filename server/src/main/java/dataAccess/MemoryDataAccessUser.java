@@ -39,7 +39,7 @@ public class MemoryDataAccessUser implements DataAccessUser {
         else if(user.username()==null || user.password()==null){
             throw new DataAccessException("Error: description");
         }
-        else if (users.get(user.username())==null){
+        else if (users.get(user.username())==null||!Objects.equals(users.get(user.username()).password(), user.password())){
             throw new DataAccessException("Error: unauthorized");
         }
 

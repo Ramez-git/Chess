@@ -30,13 +30,17 @@ public class MemoryDataAccessGame implements DataAccessgame{
             if (Black == "check") {
 
         games.put(ID,new GameData(ID,White,game.blackUsername(),game.getgamename(),game.getgame()));}
-            else{
-                games.put(ID,new GameData(ID, game.whiteUsername(), Black,game.getgamename(),game.getgame()));
-            }
+
+
+        else if(White == "check"){
+            games.put(ID,new GameData(ID, game.whiteUsername(), Black,game.getgamename(),game.getgame()));
+        }
+        else if(White==""){
+            games.put(ID,new GameData(ID, game.whiteUsername(), Black,game.getgamename(),game.getgame()));
         }
         else{
             throw new DataAccessException("err on updategame");
-        }
+        }}
     }
 
     @Override

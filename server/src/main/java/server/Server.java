@@ -101,8 +101,8 @@ public class Server {
         } catch (DataAccessException e) {
             if(Objects.equals(e.getMessage(), "Error: unauthorized")){
                 res.status(401);
-                res.body(new Gson().toJson(new message( "Error: already taken")));
-                return new Gson().toJson(new message( "Error: already taken"));
+                res.body(new Gson().toJson(new message( "Error: unauthorized")));
+                return new Gson().toJson(new message( "Error: unauthorized"));
 
             } else if (Objects.equals(e.getMessage(), "Error: description")) {
                 res.status(500);
@@ -166,10 +166,14 @@ public class Server {
                 g.updateGame(x,y,"check");
                 return new Gson().toJson("it worked");
             }
-            else{
+            else if (Objects.equals(game.playerColor, "BLACK")){
                 var x = Integer.parseInt(game.gameID);
                 var y =a.getusr(new AuthData(authstr,"")).username();
                 g.updateGame(x,"check",y);
+            }
+            else{
+                var x = Integer.parseInt(game.gameID);
+                g.updateGame(x,"","");
             }
 
         } catch (DataAccessException e) {
