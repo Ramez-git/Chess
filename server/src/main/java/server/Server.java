@@ -143,7 +143,7 @@ public class Server {
         var myauth = new AuthData(authstr, "");
         try {
             authService1.getusr(myauth);
-
+            res.status(200);
             return new Gson().toJson(new GamesWrapper(gameService1.listGames()));
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
@@ -168,20 +168,22 @@ public class Server {
                 var x = Integer.parseInt(game.gameID);
                 var y = authService1.getusr(new AuthData(authstr, "")).username();
                 gameService1.updateGame(x, y, "check");
-                return new Gson().toJson(null);
+                return "";
             } else if (Objects.equals(game.playerColor, "BLACK")) {
                 var x = Integer.parseInt(game.gameID);
                 var y = authService1.getusr(new AuthData(authstr, "")).username();
                 gameService1.updateGame(x, "check", y);
+                return "";
             } else {
                 var x = Integer.parseInt(game.gameID);
-                gameService1.updateGame(x, "", "");
+                gameService1.updateGame(x, null, null);
+                return "";
             }
 
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
-        return null;
+
     }
 
     private Object deleteEVERYTHING(Request req, Response res) throws ResolutionException {
@@ -237,13 +239,13 @@ public class Server {
 
     public class GamesWrapper {
         @SerializedName("games")
-        private Collection<GameData> games;
+        private GameData[] games;
 
-        public GamesWrapper(Collection<GameData> games) {
+        public GamesWrapper(GameData[] games) {
             this.games = games;
         }
 
-        public Collection<GameData> getGames() {
+        public GameData[] getGames() {
             return games;
         }
     }

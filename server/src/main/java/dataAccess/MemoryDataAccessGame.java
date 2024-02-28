@@ -6,6 +6,7 @@ import model.GameData;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Objects;
 
 public class MemoryDataAccessGame implements DataAccessgame {
     final private HashMap<Integer, GameData> games = new HashMap<>();
@@ -29,26 +30,33 @@ public class MemoryDataAccessGame implements DataAccessgame {
     public void updateGame(Integer ID, String White, String Black) throws DataAccessException {
         if (games.containsKey(ID)) {
             var game = games.get(ID);
-            if (Black == "check") {
-
-                games.put(ID, new GameData(ID, White, game.blackUsername(), game.getgamename(), game.getgame()));
-            } else if (White == "check") {
-                games.put(ID, new GameData(ID, game.whiteUsername(), Black, game.getgamename(), game.getgame()));
-            } else if (White == "") {
-                games.put(ID, new GameData(ID, game.whiteUsername(), Black, game.getgamename(), game.getgame()));
-            } else {
-                throw new DataAccessException("err on updategame");
+            String myWhite;
+            String myBlack;
+            if(Objects.equals(White, "check")){
+                myWhite = game.whiteUsername();
+                myBlack = Black;
+            } else if (Objects.equals(Black, "check")) {
+                myBlack = game.blackUsername();
+                myWhite=White;
             }
+            else{
+                myWhite = null;
+                myBlack=null;
+            }
+            if(myBlack==""){
+                myBlack=null;
+            }
+            if(myWhite == ""){
+                myWhite=null;
+            }
+            games.put(ID,new GameData(ID,myWhite,myBlack,game.getgamename(),game.getgame()));
         }
     }
 
     @Override
-    public Collection<GameData> listGames() throws DataAccessException {
-        Collection<GameData> g = new HashSet<>();
-        for (var gamm : games.values()) {
-            g.add(gamm);
-        }
-        return g;
+    public GameData[] listGames() throws DataAccessException {
+        GameData[] data = (games.values().toArray(new GameData[0]));
+        return data;
     }
 
     @Override

@@ -12,7 +12,7 @@ public interface DataAccessgame {
 
     Integer createGame(String Gamename) throws DataAccessException;
 
-    Collection<GameData> listGames() throws DataAccessException;
+    GameData[] listGames() throws DataAccessException;
 
     void deleteAll() throws DataAccessException;
 }

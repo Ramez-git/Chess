@@ -14,7 +14,7 @@ public class GameService implements DataAccessgame {
         this.data = data;
     }
 
-    public Collection<GameData> listGames() throws DataAccessException {
+    public GameData[] listGames() throws DataAccessException {
         return data.listGames();
     }
 
