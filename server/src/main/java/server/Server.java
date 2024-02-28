@@ -10,6 +10,7 @@ import service.*;
 import spark.*;
 //import MemoryDataAccess.*;
 import java.lang.module.ResolutionException;
+import java.util.Objects;
 
 public class Server {
     private final UserService userService;
@@ -150,7 +151,19 @@ public class Server {
         return id;
     }
     private Object joinGame(Request req, Response res) throws ResolutionException{
-        return new Gson().toJson("acknowledged joinGame");
+        var game = new Gson().fromJson(req.body(), gamecolorr.class);
+        var authstr =req.headers("Authorization");
+        var g = gameService;
+        var a =authService;
+        try{
+            if(Objects.equals(game.playerColor, "WHITE")){
+                g.updateGame(Integer.parseInt(game.gameID),a.getusr(new AuthData(authstr,"")).getusername(),"");
+            }
+
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
     }
     private Object deleteEVERYTHING(Request req, Response res) throws ResolutionException{
         try{
@@ -175,9 +188,10 @@ public class Server {
             return gameName;
         }
 }
-    public class gamecolor {
-        @SerializedName("gamecolor")
+    public static class gamecolorr {
+        @SerializedName("playerColor")
         private String playerColor;
+        @SerializedName("gameID")
         private String gameID;
 
         public String getPlayerColor() {

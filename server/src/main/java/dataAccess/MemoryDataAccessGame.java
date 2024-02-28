@@ -29,7 +29,10 @@ public class MemoryDataAccessGame implements DataAccessgame{
     public void updateGame(Integer ID,String White,String Black) throws DataAccessException {
         if(games.containsValue(ID)){
         var game = games.get(ID);
-        games.put(ID,new GameData(ID,))
+        games.put(ID,new GameData(ID,White,Black,game.getgamename(),game.getgame()));
+        }
+        else{
+            throw new DataAccessException("err on updategame");
         }
     }
 

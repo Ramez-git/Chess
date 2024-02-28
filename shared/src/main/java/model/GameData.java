@@ -11,4 +11,10 @@ public record GameData(int gameID, String whiteUsername, String blackUsername, S
     public String toString() {
         return new Gson().toJson(this);
     }
+    public ChessGame getgame(){
+        return game;
+    }
+    public String getgamename(){
+        return gameName;
+    }
 }
