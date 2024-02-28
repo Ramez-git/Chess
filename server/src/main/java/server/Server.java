@@ -64,23 +64,23 @@ public class Server {
     //functions for endpoints
     private Object addUser(Request req, Response res) throws ResolutionException {
         var user = new Gson().fromJson(req.body(), UserData.class);
-        UserService u = userService;
+        UserService userService1 = userService;
         try {
-            var myauth = u.CreateUser(user);
+            var myauth = userService1.CreateUser(user);
             res.status(200);
             res.body(new Gson().toJson(myauth));
             return new Gson().toJson(myauth);
         } catch (DataAccessException e) {
-            if (e.getMessage() == "Error: already taken") {
+            if (Objects.equals(e.getMessage(), "Error: already taken")) {
                 res.status(403);
-                res.body(new Gson().toJson("\"message\": \"Error: already taken\""));
+                res.body(new Gson().toJson(new message("Error: already taken")));
                 return new Gson().toJson(new message("Error: already taken"));
 
-            } else if (e.getMessage() == "Error: description") {
+            } else if (Objects.equals(e.getMessage(), "Error: description")) {
                 res.status(500);
                 res.body(new Gson().toJson(new message("Error: description")));
                 return new Gson().toJson(new message("Error: description"));
-            } else if (e.getMessage() == "Error: bad request") {
+            } else if (Objects.equals(e.getMessage(), "Error: bad request")) {
                 res.status(400);
                 res.body(new Gson().toJson(new message("Error: bad request")));
                 return new Gson().toJson(new message("Error: bad request"));
@@ -94,9 +94,9 @@ public class Server {
 
     private Object loginUser(Request req, Response res) throws ResolutionException {
         var user = new Gson().fromJson(req.body(), UserData.class);
-        UserService u = userService;
+        UserService userService1 = userService;
         try {
-            var myauth = u.login(user);
+            var myauth = userService1.login(user);
             res.status(200);
             res.body(new Gson().toJson(myauth));
             return new Gson().toJson(myauth);
@@ -118,33 +118,33 @@ public class Server {
 
     private Object deleteSession(Request req, Response res) throws ResolutionException {
         var theauth = req.headers("Authorization");
-        var a = authService;
+        var authService1 = authService;
         try {
-            a.deleteSession(new AuthData(theauth, ""));
+            authService1.deleteSession(new AuthData(theauth, ""));
             res.status(200);
-            return new Gson().toJson("logged out");
+            return new Gson().toJson(null);
         } catch (DataAccessException e) {
-            if (e.getMessage() == "Error: unauthorized") {
+            if (Objects.equals(e.getMessage(), "Error: unauthorized")) {
                 res.status(401);
                 res.body(new Gson().toJson(new message("Error: unauthorized")));
-                return new Gson().toJson("\"message\": \"Error: unauthorized\"");
+                return new Gson().toJson(new message("Error: unauthorized"));
             } else {
                 res.status(500);
-                res.body(new Gson().toJson("\"message\": \"Error: description\""));
-                return new Gson().toJson("\"message\": \"Error: description\"");
+                res.body(new Gson().toJson(new message("Error: description")));
+                return new Gson().toJson(new message("Error: description"));
             }
         }
     }
 
     private Object listGames(Request req, Response res) throws ResolutionException, DataAccessException {
         var authstr = req.headers("Authorization");
-        var x = authService;
-        var g = gameService;
+        var authService1 = authService;
+        var gameService1 = gameService;
         var myauth = new AuthData(authstr, "");
         try {
-            x.getusr(myauth);
+            authService1.getusr(myauth);
 
-            return new Gson().toJson(new GamesWrapper(g.listGames()));
+            return new Gson().toJson(new GamesWrapper(gameService1.listGames()));
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
@@ -152,30 +152,30 @@ public class Server {
     }
 
     private Object createGame(Request req, Response res) throws ResolutionException, DataAccessException {
-        var g = gameService;
+        var gameService1 = gameService;
         var game = new Gson().fromJson(req.body(), gamename.class);
-        var id = g.createGame(game.getGameName());
-        return id;
+        var id = gameService1.createGame(game.getGameName());
+        return new Gson().toJson(new gameID(id));
     }
 
     private Object joinGame(Request req, Response res) throws ResolutionException {
         var game = new Gson().fromJson(req.body(), gamecolorr.class);
         var authstr = req.headers("Authorization");
-        var g = gameService;
-        var a = authService;
+        var gameService1 = gameService;
+        var authService1 = authService;
         try {
             if (Objects.equals(game.playerColor, "WHITE")) {
                 var x = Integer.parseInt(game.gameID);
-                var y = a.getusr(new AuthData(authstr, "")).username();
-                g.updateGame(x, y, "check");
-                return new Gson().toJson("it worked");
+                var y = authService1.getusr(new AuthData(authstr, "")).username();
+                gameService1.updateGame(x, y, "check");
+                return new Gson().toJson(null);
             } else if (Objects.equals(game.playerColor, "BLACK")) {
                 var x = Integer.parseInt(game.gameID);
-                var y = a.getusr(new AuthData(authstr, "")).username();
-                g.updateGame(x, "check", y);
+                var y = authService1.getusr(new AuthData(authstr, "")).username();
+                gameService1.updateGame(x, "check", y);
             } else {
                 var x = Integer.parseInt(game.gameID);
-                g.updateGame(x, "", "");
+                gameService1.updateGame(x, "", "");
             }
 
         } catch (DataAccessException e) {
@@ -186,18 +186,18 @@ public class Server {
 
     private Object deleteEVERYTHING(Request req, Response res) throws ResolutionException {
         try {
-            var c = authService;
-            var g = gameService;
-            var x = userService;
-            c.deleteAll();
-            g.deleteAll();
-            x.deleteAll();
+            var authService1 = authService;
+            var gameService1 = gameService;
+            var userService1 = userService;
+            authService1.deleteAll();
+            gameService1.deleteAll();
+            userService1.deleteAll();
             res.status(200);
             return new Gson().toJson(null);
         } catch (DataAccessException e) {
             res.status(500);
-            res.body(new Gson().toJson("\"message\": \"Error: description\""));
-            return new Gson().toJson("\"message\": \"Error: description\"");
+            res.body(new Gson().toJson(new message("Error: description")));
+            return new Gson().toJson(new message("Error: description"));
         }
     }
 
@@ -248,4 +248,16 @@ public class Server {
         }
     }
 
+    public class gameID {
+        @SerializedName("gameID")
+        private Integer gameID;
+
+        public gameID(int ID) {
+            this.gameID = ID;
+        }
+
+        public Integer getGameID() {
+            return gameID;
+        }
+    }
 }

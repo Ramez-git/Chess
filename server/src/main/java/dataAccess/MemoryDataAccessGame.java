@@ -45,8 +45,8 @@ public class MemoryDataAccessGame implements DataAccessgame {
     @Override
     public Collection<GameData> listGames() throws DataAccessException {
         Collection<GameData> g = new HashSet<>();
-        for (var i : games.values()) {
-            g.add(i);
+        for (var gamm : games.values()) {
+            g.add(gamm);
         }
         return g;
     }
