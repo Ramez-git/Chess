@@ -9,4 +9,10 @@ public record AuthData(String authToken, String username){
     public String toString() {
         return new Gson().toJson(this);
     }
+    public String username(){
+        return this.username;
+    }
+    public String authtoken(){
+        return this.authToken;
+    }
 }
