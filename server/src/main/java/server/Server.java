@@ -1,9 +1,9 @@
 package server;
 
 import com.google.gson.Gson;
-import dataAccess.DataAccess;
-import dataAccess.DataAccessException;
-import dataAccess.MemoryDataAccess;
+import com.google.gson.annotations.SerializedName;
+import dataAccess.DataAccessUser;
+import dataAccess.*;
 import model.AuthData;
 import model.UserData;
 import service.*;
@@ -14,17 +14,16 @@ import java.lang.module.ResolutionException;
 public class Server {
     private final UserService userService;
     private final GameService gameService;
-    private final clear clearServiceusr;
-    private final clear clearServicegame;
+    private final AuthService authService;
 
 
     public Server(){
-        final DataAccess userdata = new MemoryDataAccess();
+        final DataAccessUser userdata = new MemoryDataAccessUserUser();
         this.userService = new UserService(userdata);
-        final DataAccess gamedata = new MemoryDataAccess();
+        final DataAccessgame gamedata = new MemoryDataAccessGame();
         this.gameService = new GameService(gamedata);
-        this.clearServiceusr = new clear(userdata);
-        this.clearServicegame = new clear(gamedata);
+        final DataAccessAuth authdata = new MemoryDataAccessUserAuth();
+        this.authService=new AuthService(authdata);
 
 
     }
@@ -111,10 +110,10 @@ public class Server {
         }
     }
     private Object deleteSession(Request req, Response res) throws ResolutionException{
-        var theauth = new Gson().fromJson(req.body(), AuthData.class);
-        var a = clearServiceusr;
+        var theauth =req.headers("Authorization");
+        var a = authService;
         try{
-            a.deleteSession(theauth);
+            a.deleteSession(new AuthData("",""));
             res.status(200);
             return null;
         } catch (DataAccessException e) {
@@ -130,21 +129,34 @@ public class Server {
             }
         }
     }
-    private Object listGames(Request req, Response res) throws ResolutionException{
-        return new Gson().toJson("acknowledged listGame");
+    private Object listGames(Request req, Response res) throws ResolutionException, DataAccessException {
+        var authstr =req.headers("Authorization");
+        var x = authService;
+        var g = gameService;
+        var myauth = new AuthData(authstr,"");
+        try{
+            x.getusr(myauth);
+            return g.listGames();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+
     }
-    private Object createGame(Request req, Response res) throws ResolutionException{
-        return new Gson().toJson("acknowledged createGame");
+    private Object createGame(Request req, Response res) throws ResolutionException, DataAccessException {
+        var g = gameService;
+        var game = new Gson().fromJson(req.body(), gamename.class);
+        var id = g.createGame(game.getGameName());
+        return id;
     }
     private Object joinGame(Request req, Response res) throws ResolutionException{
         return new Gson().toJson("acknowledged joinGame");
     }
     private Object deleteEVERYTHING(Request req, Response res) throws ResolutionException{
         try{
-            var c = clearServiceusr;
-            var g = clearServicegame;
-            c.DELETEALL();
-            g.DELETEALL();
+            var c = authService;
+            var g = gameService;
+            c.deleteAll();
+            g.deleteAll();
             res.status(200);
             return null;
         } catch (DataAccessException e) {
@@ -154,4 +166,16 @@ public class Server {
         }
     }
     //end functions for endpoints
+    public class gamename {
+        @SerializedName("gameName")
+        private String gameName;
+
+        public String getGameName() {
+            return gameName;
+        }
+}
+    public class message {
+        @SerializedName("message")
+        private String message;
+    }
 }

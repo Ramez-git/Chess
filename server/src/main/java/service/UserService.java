@@ -1,17 +1,13 @@
 package service;
 
-import chess.ChessGame;
-import dataAccess.DataAccess;
+import dataAccess.DataAccessUser;
 import dataAccess.DataAccessException;
-import dataAccess.MemoryDataAccess;
 import model.AuthData;
 import model.UserData;
 
-import java.util.Collection;
-
 public class UserService {
-    private DataAccess data;
-    public UserService(DataAccess data){
+    private DataAccessUser data;
+    public UserService(DataAccessUser data){
 
         this.data = data;
     }

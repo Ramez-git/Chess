@@ -1,21 +1,22 @@
 package service;
-import chess.ChessGame;
-import dataAccess.DataAccess;
+
+import dataAccess.DataAccessClear;
 import dataAccess.DataAccessException;
-import dataAccess.MemoryDataAccess;
 import model.AuthData;
 
-import java.util.Collection;
-public class clear {
-    private DataAccess data;
-    public clear(DataAccess data){
+public class clear<T extends DataAccessClear> implements DataAccessClear {
+    private T data;
+
+    public clear(T data) {
         this.data = data;
     }
-public void DELETEALL() throws DataAccessException {
-    data.clear();
-}
-public void deleteSession(AuthData auth) throws DataAccessException {
-    data.deleteAuth(auth);
-}
 
+
+
+
+
+    @Override
+    public void clear() throws DataAccessException {
+        // Implement clear method if needed
+    }
 }
