@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class MemoryDataAccessAuth implements DataAccessAuth {
-    final private HashMap<String, AuthData> auths = new HashMap<>();
+    final HashMap<String, AuthData> auths = new HashMap<>();
 
     public AuthData createAuth(UserData user) throws DataAccessException {
         var authmyuser = new AuthData(UUID.randomUUID().toString(), user.username());

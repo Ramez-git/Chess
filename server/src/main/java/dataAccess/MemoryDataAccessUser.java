@@ -8,8 +8,8 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class MemoryDataAccessUser implements DataAccessUser {
-    final private HashMap<String, UserData> users = new HashMap<>();
-    private final AuthService authService;
+    public final HashMap<String, UserData> users = new HashMap<>();
+    final AuthService authService;
 
     // Constructor that accepts AuthService
     public MemoryDataAccessUser(AuthService authService) {

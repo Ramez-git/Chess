@@ -30,23 +30,9 @@ public class MemoryDataAccessGame implements DataAccessgame {
         String myBlack;
         if (games.containsKey(ID)) {
             var game = games.get(ID);
-            if (White == null && Black == null) {
-                if (Objects.equals(game.whiteUsername(), "")) {
-                    myWhite = null;
-                } else {
-                    myWhite = game.whiteUsername();
-                }
-                if (Objects.equals(game.blackUsername(), "")) {
-                    myBlack = null;
-                } else {
-                    myBlack = game.blackUsername();
-                }
-                games.put(ID, new GameData(ID, myWhite, myBlack, game.getgamename(), game.getgame()));
-            } else {
-
+             updateGame2(ID,White,Black);
                 if (!Objects.equals(Black, "check") && game.blackUsername() != null) {
                     throw new DataAccessException("Error: already taken");
-
                 }
                 if (!Objects.equals(White, "check") && game.whiteUsername() != null) {
                     throw new DataAccessException("Error: already taken");
@@ -63,10 +49,28 @@ public class MemoryDataAccessGame implements DataAccessgame {
                 }
                 games.put(ID, new GameData(ID, myWhite, myBlack, game.getgamename(), game.getgame()));
             }
-        } else {
+         else {
             throw new DataAccessException("game does not exist");
         }
 
+    }
+    public void updateGame2(Integer ID, String White, String Black) throws DataAccessException {
+        String myWhite;
+        String myBlack;
+        var game = games.get(ID);
+        if (White == null && Black == null) {
+            if (Objects.equals(game.whiteUsername(), "")) {
+                myWhite = null;
+            } else {
+                myWhite = game.whiteUsername();
+            }
+            if (Objects.equals(game.blackUsername(), "")) {
+                myBlack = null;
+            } else {
+                myBlack = game.blackUsername();
+            }
+            games.put(ID, new GameData(ID, myWhite, myBlack, game.getgamename(), game.getgame()));
+        }
     }
 
     @Override
