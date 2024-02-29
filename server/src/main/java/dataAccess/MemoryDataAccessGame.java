@@ -30,30 +30,30 @@ public class MemoryDataAccessGame implements DataAccessgame {
         String myBlack;
         if (games.containsKey(ID)) {
             var game = games.get(ID);
-             updateGame2(ID,White,Black);
-                if (!Objects.equals(Black, "check") && game.blackUsername() != null) {
-                    throw new DataAccessException("Error: already taken");
-                }
-                if (!Objects.equals(White, "check") && game.whiteUsername() != null) {
-                    throw new DataAccessException("Error: already taken");
-                }
-                if (Objects.equals(White, "check")) {
-                    myWhite = game.whiteUsername();
-                    myBlack = Black;
-                } else if (Objects.equals(Black, "check")) {
-                    myBlack = game.blackUsername();
-                    myWhite = White;
-                } else {
-                    myWhite = null;
-                    myBlack = null;
-                }
-                games.put(ID, new GameData(ID, myWhite, myBlack, game.getgamename(), game.getgame()));
+            updateGame2(ID, White, Black);
+            if (!Objects.equals(Black, "check") && game.blackUsername() != null) {
+                throw new DataAccessException("Error: already taken");
             }
-         else {
+            if (!Objects.equals(White, "check") && game.whiteUsername() != null) {
+                throw new DataAccessException("Error: already taken");
+            }
+            if (Objects.equals(White, "check")) {
+                myWhite = game.whiteUsername();
+                myBlack = Black;
+            } else if (Objects.equals(Black, "check")) {
+                myBlack = game.blackUsername();
+                myWhite = White;
+            } else {
+                myWhite = null;
+                myBlack = null;
+            }
+            games.put(ID, new GameData(ID, myWhite, myBlack, game.getgamename(), game.getgame()));
+        } else {
             throw new DataAccessException("game does not exist");
         }
 
     }
+
     public void updateGame2(Integer ID, String White, String Black) throws DataAccessException {
         String myWhite;
         String myBlack;

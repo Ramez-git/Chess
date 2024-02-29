@@ -1,14 +1,15 @@
 import chess.ChessGame;
+import dataAccess.*;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
-import dataAccess.*;
 import service.AuthService;
 import service.GameService;
 import service.UserService;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class serviceTests {
@@ -73,7 +74,6 @@ public class serviceTests {
         assertDoesNotThrow(() -> userService.deleteAll());
     }
 
-    // AuthService Tests
 
     @Test
     public void testAuthService_GetAuth_Positive() throws DataAccessException {
@@ -136,13 +136,13 @@ public class serviceTests {
     @Test
     public void testAuthService_CreateAuth_Positive() {
         UserData user = new UserData("username", "password", "email");
-
         assertDoesNotThrow(() -> {
             AuthData authData = authService.createAuth(user);
             assertNotNull(authData);
             assertTrue(memoryDataAccessAuth.auths.containsKey(authData.authToken()));
         });
     }
+
     @Test
     public void testGameService_CreateGame_Positive() {
         assertDoesNotThrow(() -> {
@@ -161,31 +161,19 @@ public class serviceTests {
 
     @Test
     public void testGameService_UpdateGame_Positive() throws DataAccessException {
-        // Arrange: Create a new game and update it with a white player
         Integer gameID = gameService.createGame("ChessGame");
-
-        // Act: Update the game with a white player
         assertDoesNotThrow(() -> gameService.updateGame(gameID, "WhitePlayer", null));
-
-        // Assert: Verify that the game has been updated with the correct white player
-        assertEquals(null, memoryDataAccessGame.games.get(gameID).whiteUsername(),
-                "Failed to update the game with the correct white player.");
+        assertNull(memoryDataAccessGame.games.get(gameID).whiteUsername(), "Failed to update the game with the correct white player.");
     }
 
     @Test
     public void testGameService_GetGame_Positive() throws DataAccessException {
-        // Arrange: Create a new game
         Integer gameID = gameService.createGame("ChessGame");
-
-        // Act: Retrieve the game
         assertDoesNotThrow(() -> {
             ChessGame chessGame = gameService.getGame(gameID);
-
-            // Assert: Verify that the retrieved game is not null
             assertNotNull(chessGame, "Failed to retrieve the game.");
         });
     }
-
 
     @Test
     public void testGameService_DeleteAll_Positive() {
