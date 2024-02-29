@@ -1,86 +1,194 @@
-import dataAccess.DataAccessException;
-import model.AuthData;
-import model.UserData;
 import chess.ChessGame;
+import model.AuthData;
 import model.GameData;
+import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import service.*;
-
 import static org.junit.jupiter.api.Assertions.*;
+import dataAccess.*;
+import service.AuthService;
+import service.GameService;
+import service.UserService;
+
+
 public class serviceTests {
 
     private UserService userService;
-    private GameService gameService;
+    private MemoryDataAccessUser memoryDataAccessUser;
     private AuthService authService;
+    private MemoryDataAccessAuth memoryDataAccessAuth;
+    private MemoryDataAccessGame memoryDataAccessGame;
+    private GameService gameService;
 
     @BeforeEach
     public void setUp() {
+        final DataAccessAuth authdata = new MemoryDataAccessAuth();
+        memoryDataAccessAuth = (MemoryDataAccessAuth) authdata;
+        authService = new AuthService(memoryDataAccessAuth);
 
+        final DataAccessUser userdata = new MemoryDataAccessUser(authService);
+        memoryDataAccessUser = (MemoryDataAccessUser) userdata;
+        userService = new UserService(memoryDataAccessUser);
+
+        final DataAccessgame gamedata = new MemoryDataAccessGame();
+        memoryDataAccessGame = (MemoryDataAccessGame) gamedata;
+        gameService = new GameService(memoryDataAccessGame);
+    }
+
+    // UserService Tests
+
+    @Test
+    public void testUserService_CreateUser_Positive() {
+        UserData user = new UserData("username", "password", "email");
+        assertDoesNotThrow(() -> {
+            userService.CreateUser(user);
+            assertTrue(memoryDataAccessUser.users.containsKey("username"));
+        });
     }
 
     @Test
-    public void testUserService_CreateUser() {
-
+    public void testUserService_CreateUser_Negative() {
+        UserData invalidUser = new UserData(null, "password", "email");
+        assertThrows(DataAccessException.class, () -> userService.CreateUser(invalidUser));
     }
 
     @Test
-    public void testUserService_Login() {
-
+    public void testUserService_Login_Positive() {
+        UserData user = new UserData("username", "password", "email");
+        assertDoesNotThrow(() -> {
+            userService.CreateUser(user);
+            AuthData authData = userService.login(user);
+            assertNotNull(authData);
+        });
     }
 
     @Test
-    public void testUserService_DeleteAll() {
-
+    public void testUserService_Login_Negative() {
+        UserData invalidUser = new UserData("nonexistentUser", "invalidPassword", "email");
+        assertThrows(DataAccessException.class, () -> userService.login(invalidUser));
     }
 
     @Test
-    public void testGameService_ListGames() {
+    public void testUserService_DeleteAll_Positive() {
+        assertDoesNotThrow(() -> userService.deleteAll());
+    }
 
+    // AuthService Tests
+
+    @Test
+    public void testAuthService_GetAuth_Positive() throws DataAccessException {
+        UserData user = new UserData("username", "password", "email");
+        AuthData authData = authService.createAuth(user);
+
+        assertDoesNotThrow(() -> {
+            AuthData retrievedAuth = authService.getAuth(user);
+            assertNotNull(retrievedAuth);
+            assertEquals(authData, retrievedAuth);
+        });
     }
 
     @Test
-    public void testGameService_GetGame() {
-
+    public void testAuthService_GetAuth_Negative() {
+        UserData invalidUser = new UserData("nonexistentUser", "invalidPassword", "email");
+        assertThrows(DataAccessException.class, () -> authService.getAuth(invalidUser));
     }
 
     @Test
-    public void testGameService_UpdateGame() {
+    public void testAuthService_Getusr_Positive() throws DataAccessException {
+        UserData user = new UserData("username", "password", "email");
+        AuthData authData = authService.createAuth(user);
 
+        assertDoesNotThrow(() -> {
+            AuthData retrievedAuth = authService.getusr(authData);
+            assertNotNull(retrievedAuth);
+            assertEquals(authData, retrievedAuth);
+        });
     }
 
     @Test
-    public void testGameService_CreateGame() {
-
+    public void testAuthService_Getusr_Negative() {
+        AuthData invalidAuthData = new AuthData("invalidAuthToken", "invalidUsername");
+        assertThrows(DataAccessException.class, () -> authService.getusr(invalidAuthData));
     }
 
     @Test
-    public void testGameService_DeleteAll() {
+    public void testAuthService_DeleteSession_Positive() throws DataAccessException {
+        UserData user = new UserData("username", "password", "email");
+        AuthData authData = authService.createAuth(user);
 
+        assertDoesNotThrow(() -> {
+            authService.deleteSession(authData);
+            assertFalse(memoryDataAccessAuth.auths.containsKey(authData.authToken()));
+        });
     }
 
     @Test
-    public void testAuthService_GetAuth() {
-
+    public void testAuthService_DeleteSession_Negative() {
+        AuthData invalidAuthData = new AuthData("invalidAuthToken", "invalidUsername");
+        assertThrows(DataAccessException.class, () -> authService.deleteSession(invalidAuthData));
     }
 
     @Test
-    public void testAuthService_Getusr() {
-
+    public void testAuthService_DeleteAll_Positive() {
+        assertDoesNotThrow(() -> authService.deleteAll());
     }
 
     @Test
-    public void testAuthService_DeleteAll() {
+    public void testAuthService_CreateAuth_Positive() {
+        UserData user = new UserData("username", "password", "email");
 
+        assertDoesNotThrow(() -> {
+            AuthData authData = authService.createAuth(user);
+            assertNotNull(authData);
+            assertTrue(memoryDataAccessAuth.auths.containsKey(authData.authToken()));
+        });
+    }
+    @Test
+    public void testGameService_CreateGame_Positive() {
+        assertDoesNotThrow(() -> {
+            Integer gameID = gameService.createGame("ChessGame");
+            assertTrue(memoryDataAccessGame.games.containsKey(gameID));
+        });
     }
 
     @Test
-    public void testAuthService_DeleteSession() {
-
+    public void testGameService_ListGames_Positive() {
+        assertDoesNotThrow(() -> {
+            GameData[] games = gameService.listGames();
+            assertNotNull(games);
+        });
     }
 
     @Test
-    public void testAuthService_CreateAuth() {
+    public void testGameService_UpdateGame_Positive() throws DataAccessException {
+        // Arrange: Create a new game and update it with a white player
+        Integer gameID = gameService.createGame("ChessGame");
 
+        // Act: Update the game with a white player
+        assertDoesNotThrow(() -> gameService.updateGame(gameID, "WhitePlayer", null));
+
+        // Assert: Verify that the game has been updated with the correct white player
+        assertEquals(null, memoryDataAccessGame.games.get(gameID).whiteUsername(),
+                "Failed to update the game with the correct white player.");
+    }
+
+    @Test
+    public void testGameService_GetGame_Positive() throws DataAccessException {
+        // Arrange: Create a new game
+        Integer gameID = gameService.createGame("ChessGame");
+
+        // Act: Retrieve the game
+        assertDoesNotThrow(() -> {
+            ChessGame chessGame = gameService.getGame(gameID);
+
+            // Assert: Verify that the retrieved game is not null
+            assertNotNull(chessGame, "Failed to retrieve the game.");
+        });
+    }
+
+
+    @Test
+    public void testGameService_DeleteAll_Positive() {
+        assertDoesNotThrow(() -> gameService.deleteAll());
     }
 }

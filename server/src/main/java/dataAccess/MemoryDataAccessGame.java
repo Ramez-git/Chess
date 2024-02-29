@@ -7,12 +7,12 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class MemoryDataAccessGame implements DataAccessgame {
-    final private HashMap<Integer, GameData> games = new HashMap<>();
+    public final HashMap<Integer, GameData> games = new HashMap<>();
     private int id = 1;
 
     @Override
     public ChessGame getGame(Integer ID) throws DataAccessException {
-        if (games.containsValue(ID)) {
+        if (games.containsKey(ID)) {
             return games.get(ID).game();
         } else {
             throw new DataAccessException("game does not exist");

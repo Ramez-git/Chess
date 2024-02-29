@@ -12,7 +12,7 @@ public class AuthService {
         this.data = data;
     }
 
-    AuthData getAuth(UserData user) throws DataAccessException {
+    public AuthData getAuth(UserData user) throws DataAccessException {
         return data.getAuth(user);
     }
 
