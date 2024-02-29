@@ -14,7 +14,6 @@ import spark.Response;
 import spark.Spark;
 
 import java.lang.module.ResolutionException;
-import java.util.Collection;
 import java.util.Objects;
 
 public class Server {
@@ -146,16 +145,36 @@ public class Server {
             res.status(200);
             return new Gson().toJson(new GamesWrapper(gameService1.listGames()));
         } catch (DataAccessException e) {
-            throw new RuntimeException(e);
+            if (Objects.equals(e.getMessage(), "usr does not exist")) {
+                res.status(401);
+                return new Gson().toJson(new message("Error: unauthorized"));
+            } else {
+                throw e;
+            }
         }
 
     }
 
     private Object createGame(Request req, Response res) throws ResolutionException, DataAccessException {
-        var gameService1 = gameService;
-        var game = new Gson().fromJson(req.body(), gamename.class);
-        var id = gameService1.createGame(game.getGameName());
-        return new Gson().toJson(new gameID(id));
+        try {
+            var theauth = req.headers("Authorization");
+            var authser = authService;
+            authser.getusr(new AuthData(theauth, ""));
+            var gameService1 = gameService;
+            var game = new Gson().fromJson(req.body(), gamename.class);
+            var id = gameService1.createGame(game.getGameName());
+            return new Gson().toJson(new gameID(id));
+        } catch (DataAccessException e) {
+            if (Objects.equals(e.getMessage(), "usr does not exist")) {
+                res.status(401);
+                return new Gson().toJson(new message("Error: unauthorized"));
+            } else {
+                res.status(500);
+                res.body(new Gson().toJson(new message("Error: description")));
+                return new Gson().toJson(new message("Error: description"));
+            }
+        }
+
     }
 
     private Object joinGame(Request req, Response res) throws ResolutionException {
@@ -168,19 +187,34 @@ public class Server {
                 var x = Integer.parseInt(game.gameID);
                 var y = authService1.getusr(new AuthData(authstr, "")).username();
                 gameService1.updateGame(x, y, "check");
+                res.status(200);
                 return "";
             } else if (Objects.equals(game.playerColor, "BLACK")) {
                 var x = Integer.parseInt(game.gameID);
                 var y = authService1.getusr(new AuthData(authstr, "")).username();
                 gameService1.updateGame(x, "check", y);
+                res.status(200);
                 return "";
             } else {
+                authService1.getusr(new AuthData(authstr, ""));
                 var x = Integer.parseInt(game.gameID);
                 gameService1.updateGame(x, null, null);
+                res.status(200);
                 return "";
             }
 
         } catch (DataAccessException e) {
+            if (Objects.equals(e.getMessage(), "usr does not exist")) {
+                res.status(401);
+                return new Gson().toJson(new message("Error: unauthorized"));
+            } else if (Objects.equals(e.getMessage(), "game does not exist")) {
+                res.status(400);
+                return new Gson().toJson(new message("Error: bad request"));
+
+            } else if (Objects.equals(e.getMessage(), "Error: already taken")) {
+                res.status(403);
+                return new Gson().toJson(new message("Error: already taken"));
+            }
             throw new RuntimeException(e);
         }
 

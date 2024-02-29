@@ -5,8 +5,6 @@ import dataAccess.DataAccessException;
 import dataAccess.DataAccessgame;
 import model.GameData;
 
-import java.util.Collection;
-
 public class GameService implements DataAccessgame {
     private final DataAccessgame data;
 

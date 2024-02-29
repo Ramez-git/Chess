@@ -13,14 +13,14 @@ public class MemoryDataAccessAuth implements DataAccessAuth {
 
     public AuthData createAuth(UserData user) throws DataAccessException {
         var authmyuser = new AuthData(UUID.randomUUID().toString(), user.username());
-        auths.put(authmyuser.username(), authmyuser);
+        auths.put(authmyuser.authToken(), authmyuser);
         return authmyuser;
     }
 
 
     public void deleteAuth(AuthData authtoken) throws DataAccessException {
-        if (auths.get(authtoken.username()) != null) {
-            auths.remove(authtoken.username());
+        if (auths.get(authtoken.authToken()) != null) {
+            auths.remove(authtoken.authToken());
         } else {
             throw new DataAccessException("User not logged in thus his authtoken can't be deleted");
         }
@@ -28,11 +28,15 @@ public class MemoryDataAccessAuth implements DataAccessAuth {
 
 
     public AuthData getAuth(UserData user) throws DataAccessException {
-        if (auths.get(user.username()) != null) {
-            return auths.get(user.username());
-        } else {
-            throw new DataAccessException("User is not logged in getAuth");
+        for (Map.Entry<String, AuthData> entry : auths.entrySet()) {
+            String authToken = entry.getKey();
+            AuthData authData = entry.getValue();
+            if (Objects.equals(authData.username(), user.username())) {
+                return authData;
+            }
         }
+        throw new DataAccessException("User is not logged in getAuth");
+
     }
 
     @Override
@@ -41,14 +45,9 @@ public class MemoryDataAccessAuth implements DataAccessAuth {
         if (auth.getauthtoken() == null) {
             throw new DataAccessException("Error: description");
         }
-        for (Map.Entry<String, AuthData> entry : auths.entrySet()) {
-            String username = entry.getKey();
-            AuthData authData = entry.getValue();
-            if (Objects.equals(authData.getauthtoken(), auth.getauthtoken())) {
-                auths.remove(authData.username());
-                yup = 1;
-                break;
-            }
+        if (auths.containsKey(auth.authToken())) {
+            auths.remove(auth.authToken());
+            yup = 1;
         }
         if (yup == 0) {
             throw new DataAccessException("Error: unauthorized");
@@ -62,13 +61,11 @@ public class MemoryDataAccessAuth implements DataAccessAuth {
 
 
     public AuthData getusr(AuthData authtok) throws DataAccessException {
-        for (Map.Entry<String, AuthData> entry : auths.entrySet()) {
-            String key = entry.getKey();
-            AuthData value = entry.getValue();
-            if (Objects.equals(value.authToken(), authtok.getauthtoken())) {
-                return value;
-            }
+        if (auths.containsKey(authtok.authToken())) {
+            return auths.get(authtok.authToken());
+        } else {
+            throw new DataAccessException("usr does not exist");
         }
-        return null;
+
     }
 }
