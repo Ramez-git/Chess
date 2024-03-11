@@ -22,19 +22,23 @@ public class Server {
     private final AuthService authService;
 
 
-    public Server() {
-        final DataAccessAuth authdata = new MemoryDataAccessAuth();
-        this.authService = new AuthService(authdata);
-        final DataAccessUser userdata = new MemoryDataAccessUser(authService);
-        this.userService = new UserService(userdata);
-        final DataAccessgame gamedata = new MemoryDataAccessGame();
-        this.gameService = new GameService(gamedata);
-
+    public Server(){
+        try {
+            final DataAccessAuth authdata = new mySqlAuth();
+            this.authService = new AuthService(authdata);
+            final DataAccessUser userdata = new mySqlUser(authService);
+            this.userService = new UserService(userdata);
+            final DataAccessgame gamedata = new mysqlGame();
+            this.gameService = new GameService(gamedata);
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
+
 
         Spark.staticFiles.location("web");
 
