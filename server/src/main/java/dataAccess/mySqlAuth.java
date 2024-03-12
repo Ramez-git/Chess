@@ -33,10 +33,6 @@ public class mySqlAuth implements DataAccessAuth {
         }
     }
 
-    @Override
-    public void deleteAuth(AuthData authtoken) throws DataAccessException {
-
-    }
 
     @Override
     public AuthData createAuth(UserData user) throws DataAccessException, SQLException {
@@ -92,12 +88,14 @@ public class mySqlAuth implements DataAccessAuth {
 
     @Override
     public void deleteSession(AuthData auth) throws DataAccessException, SQLException {
-    var statement = "DELETE FROM auths WHERE username=?";
+        var statement = "DELETE FROM auths WHERE username=?";
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, auth.authToken());
                 ps.executeUpdate();
-    }}}
+            }
+        }
+    }
 
     @Override
     public void deleteAll() throws DataAccessException, SQLException {

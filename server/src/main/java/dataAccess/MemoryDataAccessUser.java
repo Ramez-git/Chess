@@ -4,6 +4,7 @@ import model.AuthData;
 import model.UserData;
 import service.AuthService;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -17,7 +18,7 @@ public class MemoryDataAccessUser implements DataAccessUser {
     }
 
     @Override
-    public AuthData CreateUser(UserData user) throws DataAccessException {
+    public AuthData CreateUser(UserData user) throws DataAccessException, SQLException {
         if (user.username() == null || user.password() == null || user.email() == null) {
             throw new DataAccessException("Error: bad request");
         } else if (users.get(user.username()) != null) {
@@ -31,7 +32,7 @@ public class MemoryDataAccessUser implements DataAccessUser {
     }
 
     @Override
-    public AuthData login(UserData user) throws DataAccessException {
+    public AuthData login(UserData user) throws DataAccessException, SQLException {
         if (users.get(user.username()) != null && Objects.equals(users.get(user.username()).password(), user.password())) {
             var auth = authService;
             var auth1 = auth.createAuth(user);

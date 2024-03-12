@@ -9,6 +9,8 @@ import service.AuthService;
 import service.GameService;
 import service.UserService;
 
+import java.sql.SQLException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -76,7 +78,7 @@ public class serviceTests {
 
 
     @Test
-    public void testAuthService_GetAuth_Positive() throws DataAccessException {
+    public void testAuthService_GetAuth_Positive() throws DataAccessException, SQLException {
         UserData user = new UserData("username", "password", "email");
         AuthData authData = authService.createAuth(user);
 
@@ -94,7 +96,7 @@ public class serviceTests {
     }
 
     @Test
-    public void testAuthService_Getusr_Positive() throws DataAccessException {
+    public void testAuthService_Getusr_Positive() throws DataAccessException, SQLException {
         UserData user = new UserData("username", "password", "email");
         AuthData authData = authService.createAuth(user);
 
@@ -112,7 +114,7 @@ public class serviceTests {
     }
 
     @Test
-    public void testAuthService_DeleteSession_Positive() throws DataAccessException {
+    public void testAuthService_DeleteSession_Positive() throws DataAccessException, SQLException {
         UserData user = new UserData("username", "password", "email");
         AuthData authData = authService.createAuth(user);
 

@@ -14,6 +14,7 @@ import spark.Response;
 import spark.Spark;
 
 import java.lang.module.ResolutionException;
+import java.sql.SQLException;
 import java.util.Objects;
 
 public class Server {
@@ -91,6 +92,8 @@ public class Server {
                 return new Gson().toJson("err handler on createuser");
             }
 
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
 
     }
@@ -116,6 +119,8 @@ public class Server {
             } else {
                 return new Gson().toJson("err handler on login");
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -136,6 +141,8 @@ public class Server {
                 res.body(new Gson().toJson(new message("Error: description")));
                 return new Gson().toJson(new message("Error: description"));
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -155,6 +162,8 @@ public class Server {
             } else {
                 throw e;
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
 
     }
@@ -177,6 +186,8 @@ public class Server {
                 res.body(new Gson().toJson(new message("Error: description")));
                 return new Gson().toJson(new message("Error: description"));
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
 
     }
@@ -207,7 +218,7 @@ public class Server {
                 return "";
             }
 
-        } catch (DataAccessException e) {
+        } catch (DataAccessException | SQLException e) {
             if (Objects.equals(e.getMessage(), "usr does not exist")) {
                 res.status(401);
                 return new Gson().toJson(new message("Error: unauthorized"));
@@ -234,7 +245,7 @@ public class Server {
             userService1.deleteAll();
             res.status(200);
             return new Gson().toJson(null);
-        } catch (DataAccessException e) {
+        } catch (DataAccessException | SQLException e) {
             res.status(500);
             res.body(new Gson().toJson(new message("Error: description")));
             return new Gson().toJson(new message("Error: description"));

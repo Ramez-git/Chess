@@ -6,6 +6,7 @@ import service.AuthService;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Objects;
 
 public class mySqlUser implements DataAccessUser {
     final AuthService authService;
@@ -68,12 +69,35 @@ public class mySqlUser implements DataAccessUser {
 
     @Override
     public AuthData login(UserData user) throws DataAccessException {
-        return null;
+        if (user.username() == null || user.password() == null) {
+            throw new DataAccessException("Error: description");}
+        else{
+            try{
+                var myusr = getusr(user.username());
+                if(Objects.equals(myusr.password(), user.password())){
+                    var auth = authService;
+                    var auth1 = auth.createAuth(myusr);
+                    return auth1;
+                }
+                else{
+                    throw new DataAccessException("Error: unauthorized");
+                }
+            } catch (DataAccessException e) {
+                throw new DataAccessException("err to fetch user from DB user");
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     @Override
-    public void deleteAll() throws DataAccessException {
-
+    public void deleteAll() throws DataAccessException, SQLException {
+        var statement = "TRUNCATE TABLE user";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.executeUpdate();
+            }
+        }
     }
 
     public UserData getusr(String username) throws DataAccessException {

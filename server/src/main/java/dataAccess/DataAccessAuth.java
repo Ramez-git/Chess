@@ -6,7 +6,6 @@ import model.UserData;
 import java.sql.SQLException;
 
 public interface DataAccessAuth {
-    void deleteAuth(AuthData authtoken) throws DataAccessException;
 
     AuthData createAuth(UserData user) throws DataAccessException, SQLException;
 
