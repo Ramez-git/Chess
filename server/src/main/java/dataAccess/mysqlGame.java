@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
+
 public class mysqlGame implements DataAccessgame {
     private final String[] createStatements = {
             """
@@ -64,7 +66,7 @@ public class mysqlGame implements DataAccessgame {
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT id, whiteUsername,blackUsername,gameName,json FROM games WHERE id=?";
             try (var ps = conn.prepareStatement(statement)) {
-                ps.setInt(1, ID+1);
+                ps.setInt(1, ID);
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
                         return readgame(rs);
@@ -134,16 +136,21 @@ public class mysqlGame implements DataAccessgame {
 
     @Override
     public Integer createGame(String Gamename) throws DataAccessException, SQLException {
-        var statement = "INSERT INTO games (id, whiteUsername, blackUsername, gameName, json) VALUES (?, ?, ?, ?, ?)";
+        var statement = "INSERT INTO games (whiteUsername, blackUsername, gameName, json) VALUES (?, ?, ?, ?)";
         try (var conn = DatabaseManager.getConnection()) {
-            try (var ps = conn.prepareStatement(statement)) {
-                ps.setInt(1, ID);
+            try (var ps = conn.prepareStatement(statement,RETURN_GENERATED_KEYS)) {
+                ps.setString(1, null);
                 ps.setString(2, null);
-                ps.setString(3, null);
-                ps.setString(4, Gamename);
-                ps.setString(5, new Gson().toJson(new ChessGame()));
+                ps.setString(3, Gamename);
+                ps.setString(4, new Gson().toJson(new ChessGame()));
                 ps.executeUpdate();
-                return ID++;
+                var rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+                else{
+                    throw new SQLException("autoincrement err");
+                }
             }
         }
         catch (SQLException e){
