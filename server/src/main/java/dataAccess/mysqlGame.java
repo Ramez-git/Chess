@@ -3,7 +3,7 @@ package dataAccess;
 import chess.ChessGame;
 import model.GameData;
 
-public class mysqlGame implements DataAccessgame{
+public class mysqlGame implements DataAccessgame {
     @Override
     public ChessGame getGame(Integer ID) throws DataAccessException {
         return null;

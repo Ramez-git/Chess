@@ -1,16 +1,14 @@
 package dataAccess;
 
-import com.mysql.cj.protocol.Resultset;
-import model.*;
-import service.*;
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.Collection;
+import model.AuthData;
+import model.UserData;
+import service.AuthService;
 
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
-import static java.sql.Types.NULL;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-public class mySqlUser implements DataAccessUser{
+public class mySqlUser implements DataAccessUser {
+    final AuthService authService;
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS  user (
@@ -22,7 +20,7 @@ public class mySqlUser implements DataAccessUser{
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
-    final AuthService authService;
+
     public mySqlUser(AuthService authService) throws DataAccessException {
         this.authService = authService;
         DatabaseManager.createDatabase();
@@ -41,21 +39,30 @@ public class mySqlUser implements DataAccessUser{
     public AuthData CreateUser(UserData user) throws DataAccessException {
         if (user.username() == null || user.password() == null || user.email() == null) {
             throw new DataAccessException("Error: bad request");
-        }
-        else{
-            try{
-                var myuser = getusr(user.username());
-            } catch (DataAccessException e) {
-                throw new RuntimeException(e);
-            }
-        }
-         else if (users.get(user.username()) != null) {
-            throw new DataAccessException("Error: already taken");
         } else {
-            users.put(user.username(), user);
-            var auth = authService;
-            var auth1 = auth.createAuth(user);
-            return auth1;
+            try {
+                var myuser = getusr(user.username());
+                if (myuser != null) {
+                    throw new DataAccessException("Error: already taken");
+                } else {
+                    var statement = "INSERT INTO user (name,password,email) VALUES (?, ?, ?)";
+                    try (var conn = DatabaseManager.getConnection()) {
+                        try (var ps = conn.prepareStatement(statement)) {
+                            ps.setString(1, user.username());
+                            ps.setString(2, user.password());
+                            ps.setString(3, user.email());
+                            ps.executeUpdate();
+                            var auth = authService;
+                            var auth1 = auth.createAuth(user);
+                            return auth1;
+                        }
+                    } catch (SQLException | DataAccessException e) {
+                        throw new DataAccessException("unable to update database user");
+                    }
+                }
+            } catch (DataAccessException e) {
+                throw new DataAccessException("unable to read database user");
+            }
         }
     }
 
@@ -68,27 +75,29 @@ public class mySqlUser implements DataAccessUser{
     public void deleteAll() throws DataAccessException {
 
     }
+
     public UserData getusr(String username) throws DataAccessException {
-        try(var conn = DatabaseManager.getConnection()){
+        try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT username, password FROM user WHERE name=?";
-            try(var ps = conn.prepareStatement(statement)){
-                ps.setString(1,username);
-                try(var rs = ps.executeQuery()){
-                    if(rs.next()){
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, username);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
                         return readusr(rs);
                     }
                 }
             }
         } catch (SQLException e) {
-            throw new DataAccessException();
+            throw new DataAccessException("un able to read user");
         }
         return null;
     }
-    private UserData readusr(ResultSet rss) throws SQLException{
+
+    private UserData readusr(ResultSet rss) throws SQLException {
         var usrname = rss.getString("name");
         var password = rss.getString("password");
         var email = rss.getString("email");
-        return new UserData(usrname,password,email);
+        return new UserData(usrname, password, email);
     }
 //    public Collection<String> usersinDB() throws DataAccessException {
 //        var stamment = "SELECT name from user";
