@@ -2,32 +2,34 @@ package dataAccess;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import model.AuthData;
 import model.GameData;
+import service.AuthService;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 
 public class mysqlGame implements DataAccessgame {
     private final String[] createStatements = {
             """
-            CREATE TABLE IF NOT EXISTS  games (
+            CREATE TABLE IF NOT EXISTS games (
               `id` int NOT NULL AUTO_INCREMENT,
-              `whiteUsername` varchar(256) NOT NULL,
-              `blackUsername` varchar(256) NOT NULL,
+              `whiteUsername` varchar(256) DEFAULT NULL,
+              `blackUsername` varchar(256) DEFAULT NULL,
               `gameName` varchar(256) NOT NULL,
               `json` TEXT DEFAULT NULL,
               PRIMARY KEY (`id`),
-              INDEX(id),
+              INDEX(id)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };
     int ID = 0;
-
-    public mysqlGame() throws DataAccessException {
+    final AuthService authService;
+    public mysqlGame(AuthService authService) throws DataAccessException {
+        this.authService = authService;
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (var statement : createStatements) {
@@ -60,19 +62,22 @@ public class mysqlGame implements DataAccessgame {
 
     public GameData getGamefull(Integer ID) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT username, password FROM games WHERE id=?";
+            var statement = "SELECT id, whiteUsername,blackUsername,gameName,json FROM games WHERE id=?";
             try (var ps = conn.prepareStatement(statement)) {
-                ps.setInt(1, ID);
+                ps.setInt(1, ID+1);
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
                         return readgame(rs);
                     }
+                    else{
+                        throw new DataAccessException("game does not exist");
+                    }
                 }
             }
-        } catch (SQLException | DataAccessException e) {
+        } catch (SQLException e) {
             throw new DataAccessException("unable to read game");
         }
-        return null;
+
     }
 
     @Override
@@ -82,9 +87,9 @@ public class mysqlGame implements DataAccessgame {
         } catch (DataAccessException e) {
             throw new DataAccessException("game does not exist");
         }
+        var mygame = getGamefull(ID);
         String myWhite;
         String myBlack;
-        var mygame = getGamefull(ID);
         if (White == null && Black == null) {
             if (Objects.equals(mygame.whiteUsername(), "")) {
                 myWhite = null;
@@ -95,23 +100,23 @@ public class mysqlGame implements DataAccessgame {
                 myBlack = null;
             } else {
                 myBlack = mygame.blackUsername();
-            }
-            if (!Objects.equals(Black, "check") && mygame.blackUsername() != null) {
-                throw new DataAccessException("Error: already taken");
-            }
-            if (!Objects.equals(White, "check") && mygame.whiteUsername() != null) {
-                throw new DataAccessException("Error: already taken");
-            }
-            if (Objects.equals(White, "check")) {
-                myWhite = mygame.whiteUsername();
-                myBlack = Black;
-            } else if (Objects.equals(Black, "check")) {
-                myBlack = mygame.blackUsername();
-                myWhite = White;
-            } else {
-                myWhite = null;
-                myBlack = null;
-            }
+            }}
+        if (!Objects.equals(Black, "check") && mygame.blackUsername() != null) {
+            throw new DataAccessException("Error: already taken");
+        }
+        if (!Objects.equals(White, "check") && mygame.whiteUsername() != null) {
+            throw new DataAccessException("Error: already taken");
+        }
+        if (Objects.equals(White, "check")) {
+            myWhite = mygame.whiteUsername();
+            myBlack = Black;
+        } else if (Objects.equals(Black, "check")) {
+            myBlack = mygame.blackUsername();
+            myWhite = White;
+        } else {
+            myWhite = null;
+            myBlack = null;
+        }
             var statement = "UPDATE games SET whiteUsername=?, blackUsername=? WHERE id =?";
             try (var conn = DatabaseManager.getConnection()) {
                 try (var ps = conn.prepareStatement(statement)) {
@@ -124,7 +129,8 @@ public class mysqlGame implements DataAccessgame {
                 throw new RuntimeException(e);
             }
         }
-    }
+
+
 
     @Override
     public Integer createGame(String Gamename) throws DataAccessException, SQLException {
@@ -139,6 +145,9 @@ public class mysqlGame implements DataAccessgame {
                 ps.executeUpdate();
                 return ID++;
             }
+        }
+        catch (SQLException e){
+            throw new DataAccessException("Error: bad request");
         }
     }
 

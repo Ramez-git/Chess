@@ -38,7 +38,7 @@ public class mySqlAuth implements DataAccessAuth {
     public AuthData createAuth(UserData user) throws DataAccessException, SQLException {
         var authsdata1 = new AuthData(UUID.randomUUID().toString(), user.username());
         var authToken = authsdata1.authToken();
-        var statement = "INSERT INTO auths (authToken, authsdata) VALUES (?, ?)";
+        var statement = "INSERT INTO auths (username, authToken) VALUES (?, ?)";
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, user.username());
@@ -62,10 +62,16 @@ public class mySqlAuth implements DataAccessAuth {
                     if (rs.next()) {
                         return readauth(rs);
                     }
+                    else{
+                        throw new SQLException("usr does not exist");
+                    }
                 }
             }
         }
-        return null;
+        catch (SQLException e){
+            throw new DataAccessException("usr does not exist");
+        }
+
     }
 
     @Override
@@ -88,12 +94,33 @@ public class mySqlAuth implements DataAccessAuth {
 
     @Override
     public void deleteSession(AuthData auth) throws DataAccessException, SQLException {
-        var statement = "DELETE FROM auths WHERE username=?";
+        var statement = "SELECT username, authToken FROM auths WHERE authToken=?";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, auth.authToken());
+                ps.executeQuery();
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        var myusr= readauth(rs);
+                        if (myusr == null){
+                            throw new DataAccessException("Error: unauthorized");
+                        }
+                    }
+                    else{
+                        throw new DataAccessException("Error: unauthorized");
+                    }
+                }
+            }
+        }
+        statement = "DELETE FROM auths WHERE authToken=?";
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, auth.authToken());
                 ps.executeUpdate();
             }
+        }
+        catch (SQLException e){
+            throw new DataAccessException("Error: unauthorized");
         }
     }
 
@@ -110,6 +137,6 @@ public class mySqlAuth implements DataAccessAuth {
     private AuthData readauth(ResultSet rss) throws SQLException {
         var usrname = rss.getString("username");
         var authtok = rss.getString("authToken");
-        return new AuthData(usrname, authtok);
+        return new AuthData(authtok, usrname);
     }
 }

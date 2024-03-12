@@ -29,7 +29,7 @@ public class Server {
             this.authService = new AuthService(authdata);
             final DataAccessUser userdata = new mySqlUser(authService);
             this.userService = new UserService(userdata);
-            final DataAccessgame gamedata = new mysqlGame();
+            final DataAccessgame gamedata = new mysqlGame(authService);
             this.gameService = new GameService(gamedata);
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
@@ -89,7 +89,7 @@ public class Server {
                 res.body(new Gson().toJson(new message("Error: bad request")));
                 return new Gson().toJson(new message("Error: bad request"));
             } else {
-                return new Gson().toJson("err handler on createuser");
+                return new Gson().toJson(new message("err handler on createuser"));
             }
 
         } catch (SQLException e) {
@@ -117,7 +117,7 @@ public class Server {
                 res.body(new Gson().toJson(new message("Error: description")));
                 return new Gson().toJson(new message("Error: description"));
             } else {
-                return new Gson().toJson("err handler on login");
+                return new Gson().toJson(new message("err handler on login"));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

@@ -12,6 +12,7 @@ public record AuthData(String authToken, String username){
     public String username(){
         return this.username;
     }
+    public String authToken(){return this.authToken;}
     public String getauthtoken(){
         return this.authToken;
     }
