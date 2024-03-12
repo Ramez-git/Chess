@@ -2,6 +2,7 @@ package dataAccess;
 
 import model.AuthData;
 import model.UserData;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import service.AuthService;
 
 import java.sql.ResultSet;
@@ -49,8 +50,10 @@ public class mySqlUser implements DataAccessUser {
                     var statement = "INSERT INTO user (name,password,email) VALUES (?, ?, ?)";
                     try (var conn = DatabaseManager.getConnection()) {
                         try (var ps = conn.prepareStatement(statement)) {
+                            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+                            String hashedPassword = encoder.encode(myuser.password());
                             ps.setString(1, user.username());
-                            ps.setString(2, user.password());
+                            ps.setString(2, hashedPassword);
                             ps.setString(3, user.email());
                             ps.executeUpdate();
                             var auth = authService;
@@ -70,16 +73,16 @@ public class mySqlUser implements DataAccessUser {
     @Override
     public AuthData login(UserData user) throws DataAccessException {
         if (user.username() == null || user.password() == null) {
-            throw new DataAccessException("Error: description");}
-        else{
-            try{
+            throw new DataAccessException("Error: description");
+        } else {
+            try {
                 var myusr = getusr(user.username());
-                if(Objects.equals(myusr.password(), user.password())){
+                BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+                if (encoder.matches(user.password(), myusr.password())) {
                     var auth = authService;
                     var auth1 = auth.createAuth(myusr);
                     return auth1;
-                }
-                else{
+                } else {
                     throw new DataAccessException("Error: unauthorized");
                 }
             } catch (DataAccessException e) {
