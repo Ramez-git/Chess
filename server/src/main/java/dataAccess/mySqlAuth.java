@@ -11,10 +11,10 @@ public class mySqlAuth implements DataAccessAuth{
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS  auths (
-              `authtoken` varchar(256) NOT NULL,
-              `authsdata` TEXT DEFAULT NULL,
-              PRIMARY KEY (`name`),
-              INDEX(name)
+              `username` varchar(256) NOT NULL,
+              `authToken` varchar(256) NOT NULL,
+              PRIMARY KEY (`authToken`),
+              INDEX(authToken)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
     };

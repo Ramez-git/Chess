@@ -1,5 +1,6 @@
 package dataAccess;
 
+import com.mysql.cj.protocol.Resultset;
 import model.*;
 import service.*;
 import java.sql.*;
@@ -40,7 +41,15 @@ public class mySqlUser implements DataAccessUser{
     public AuthData CreateUser(UserData user) throws DataAccessException {
         if (user.username() == null || user.password() == null || user.email() == null) {
             throw new DataAccessException("Error: bad request");
-        } else if (users.get(user.username()) != null) {
+        }
+        else{
+            try{
+                var myuser = getusr(user.username());
+            } catch (DataAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+         else if (users.get(user.username()) != null) {
             throw new DataAccessException("Error: already taken");
         } else {
             users.put(user.username(), user);
@@ -58,6 +67,28 @@ public class mySqlUser implements DataAccessUser{
     @Override
     public void deleteAll() throws DataAccessException {
 
+    }
+    public UserData getusr(String username) throws DataAccessException {
+        try(var conn = DatabaseManager.getConnection()){
+            var statement = "SELECT username, password FROM user WHERE name=?";
+            try(var ps = conn.prepareStatement(statement)){
+                ps.setString(1,username);
+                try(var rs = ps.executeQuery()){
+                    if(rs.next()){
+                        return readusr(rs);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException();
+        }
+        return null;
+    }
+    private UserData readusr(ResultSet rss) throws SQLException{
+        var usrname = rss.getString("name");
+        var password = rss.getString("password");
+        var email = rss.getString("email");
+        return new UserData(usrname,password,email);
     }
 //    public Collection<String> usersinDB() throws DataAccessException {
 //        var stamment = "SELECT name from user";
