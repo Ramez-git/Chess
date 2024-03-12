@@ -162,14 +162,14 @@ public class serviceTests {
     }
 
     @Test
-    public void testGameService_UpdateGame_Positive() throws DataAccessException {
+    public void testGameService_UpdateGame_Positive() throws DataAccessException, SQLException {
         Integer gameID = gameService.createGame("ChessGame");
         assertDoesNotThrow(() -> gameService.updateGame(gameID, "WhitePlayer", null));
         assertNull(memoryDataAccessGame.games.get(gameID).whiteUsername(), "Failed to update the game with the correct white player.");
     }
 
     @Test
-    public void testGameService_GetGame_Positive() throws DataAccessException {
+    public void testGameService_GetGame_Positive() throws DataAccessException, SQLException {
         Integer gameID = gameService.createGame("ChessGame");
         assertDoesNotThrow(() -> {
             ChessGame chessGame = gameService.getGame(gameID);

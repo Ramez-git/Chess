@@ -5,6 +5,8 @@ import dataAccess.DataAccessException;
 import dataAccess.DataAccessgame;
 import model.GameData;
 
+import java.sql.SQLException;
+
 public class GameService implements DataAccessgame {
     private final DataAccessgame data;
 
@@ -12,7 +14,7 @@ public class GameService implements DataAccessgame {
         this.data = data;
     }
 
-    public GameData[] listGames() throws DataAccessException {
+    public GameData[] listGames() throws DataAccessException, SQLException {
         return data.listGames();
     }
 
@@ -26,11 +28,11 @@ public class GameService implements DataAccessgame {
         data.updateGame(ID, White, Black);
     }
 
-    public Integer createGame(String Gamename) throws DataAccessException {
+    public Integer createGame(String Gamename) throws DataAccessException, SQLException {
         return data.createGame(Gamename);
     }
 
-    public void deleteAll() throws DataAccessException {
+    public void deleteAll() throws DataAccessException, SQLException {
         data.deleteAll();
     }
 
