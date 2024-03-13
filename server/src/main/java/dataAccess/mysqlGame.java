@@ -136,6 +136,9 @@ public class mysqlGame implements DataAccessgame {
 
     @Override
     public Integer createGame(String Gamename) throws DataAccessException, SQLException {
+        if(Gamename==null){
+            throw new DataAccessException("name not provided");
+        }
         var statement = "INSERT INTO games (whiteUsername, blackUsername, gameName, json) VALUES (?, ?, ?, ?)";
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement,RETURN_GENERATED_KEYS)) {

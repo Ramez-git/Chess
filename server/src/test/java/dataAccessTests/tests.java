@@ -87,8 +87,72 @@ public class tests {
         }
     }
     @Test
-    public void deleteAllsuccess() throws SQLException, DataAccessException {
+    public void deleteAllauthsuccess() throws SQLException, DataAccessException {
         authService.deleteAll();
+    }
+    @Test
+    public void loginsuccess() throws SQLException, DataAccessException {
+        var x =userService.CreateUser(new UserData("dude","pass","mail"));
+        authService.deleteSession(x);
+        userService.login(new UserData("dude","pass","mail"));
+    }
+    @Test
+    public void loginfail(){
+        try{
+            userService.login(new UserData("dude","pass","mail"));
+        } catch (DataAccessException | SQLException e) {
+            assertEquals("Error: unauthorized",e.getMessage());
+        }
+    }
+    @Test
+    public void deleteAllusrsuccess() throws SQLException, DataAccessException {
+        userService.deleteAll();
+    }
+    @Test
+    public void creategamesuccess() throws SQLException, DataAccessException {
+        gameService.createGame("mygame");
+    }
+    @Test
+    public void creategamefail(){
+        try{
+            gameService.createGame(null);
+        } catch (DataAccessException | SQLException e) {
+            assertEquals("name not provided",e.getMessage());
+        }
+    }
+    @Test
+    public void updategamesuccess() throws SQLException, DataAccessException {
+        var x =gameService.createGame("mygame");
+        gameService.updateGame(x,null,null);
+    }
+    @Test
+    public void updategamefail(){
+        try{
+            gameService.updateGame(5,null,null);
+        } catch (DataAccessException e) {
+            assertEquals("game does not exist",e.getMessage());
+        }
+    }
+    @Test
+    public void listgamestest() throws SQLException, DataAccessException {
+        gameService.listGames();
+    }
+    @Test
+    public void deleteallgame() throws SQLException, DataAccessException {
+        gameService.deleteAll();
+    }
+    @Test
+    public void getgamesuccess() throws SQLException, DataAccessException {
+    var x =gameService.createGame("mygame");
+    gameService.getGame(x);
+    }
+    @Test
+    public void getgamefail(){
+        try{
+            gameService.getGame(3);
+        } catch (DataAccessException e) {
+            assertEquals("game does not exist",e.getMessage());
+        }
     }
 
 }

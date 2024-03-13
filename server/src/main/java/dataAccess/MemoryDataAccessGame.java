@@ -20,6 +20,9 @@ public class MemoryDataAccessGame implements DataAccessgame {
     }
 
     public Integer createGame(String Gamename) throws DataAccessException {
+        if(Gamename==null){
+            throw new DataAccessException("name not provided");
+        }
         games.put(id, new GameData(id, null, null, Gamename, new ChessGame()));
         return id++;
     }
@@ -54,7 +57,7 @@ public class MemoryDataAccessGame implements DataAccessgame {
 
     }
 
-    public void updateGame2(Integer ID, String White, String Black) throws DataAccessException {
+    private void updateGame2(Integer ID, String White, String Black) throws DataAccessException {
         String myWhite;
         String myBlack;
         var game = games.get(ID);
