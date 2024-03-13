@@ -121,16 +121,4 @@ public class mySqlUser implements DataAccessUser {
         var email = rss.getString("email");
         return new UserData(usrname, password, email);
     }
-//    public Collection<String> usersinDB() throws DataAccessException {
-//        var stamment = "SELECT name from user";
-//        Collection<String> res= new ArrayList<>();
-//        try(var connection = DatabaseManager.getConnection(); var ps = connection.prepareStatement(stamment); var result = ps.executeQuery()){
-//            while(result.next()){
-//                res.add(result.getString("name"));
-//            }
-//        } catch (SQLException e) {
-//            throw new RuntimeException(e);
-//        }
-//        return res;
-//    }
 }
