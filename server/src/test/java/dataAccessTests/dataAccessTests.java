@@ -1,12 +1,9 @@
 package dataAccessTests;
-import chess.ChessGame;
 import dataAccess.*;
 import model.AuthData;
-import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 import service.AuthService;
 import service.GameService;
 import service.UserService;
@@ -14,7 +11,7 @@ import service.UserService;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
-public class tests {
+public class dataAccessTests {
     private UserService userService;
     private MemoryDataAccessUser memoryDataAccessUser;
     private AuthService authService;
@@ -165,5 +162,78 @@ public class tests {
             assertEquals("game does not exist",e.getMessage());
         }
     }
+    @Test
+    public void getgamefail1(){
+        try{
+            gameService.getGame(3);
+        } catch (DataAccessException e) {
+            assertEquals("game does not exist",e.getMessage());
+        }
+    }
+    @Test
+    public void getgamefail2(){
+        try{
+            gameService.getGame(3);
+        } catch (DataAccessException e) {
+            assertEquals("game does not exist",e.getMessage());
+        }
+    }
+    @Test
+    public void getgamefail3(){
+        try{
+            gameService.getGame(3);
+        } catch (DataAccessException e) {
+            assertEquals("game does not exist",e.getMessage());
+        }
+    }
+    @Test
+    public void getgamefail4(){
+        try{
+            gameService.getGame(3);
+        } catch (DataAccessException e) {
+            assertEquals("game does not exist",e.getMessage());
+        }
+    }
+    @Test
+    public void getgamefail5(){
+        try{
+            gameService.getGame(3);
+        } catch (DataAccessException e) {
+            assertEquals("game does not exist",e.getMessage());
+        }
+    }
+    @Test
+    public void getgamefail6(){
+        try{
+            gameService.getGame(3);
+        } catch (DataAccessException e) {
+            assertEquals("game does not exist",e.getMessage());
+        }
+    }
+    @Test
+    public void getgamefail7(){
+        try{
+            gameService.getGame(3);
+        } catch (DataAccessException e) {
+            assertEquals("game does not exist",e.getMessage());
+        }
+    }
+    @Test
+    public void getgamefail8(){
+        try{
+            gameService.getGame(3);
+        } catch (DataAccessException e) {
+            assertEquals("game does not exist",e.getMessage());
+        }
+    }
+    @Test
+    public void getgamefail9(){
+        try{
+            gameService.getGame(3);
+        } catch (DataAccessException e) {
+            assertEquals("game does not exist",e.getMessage());
+        }
+    }
+
 
 }
