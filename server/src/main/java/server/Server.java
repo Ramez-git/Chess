@@ -66,7 +66,7 @@ public class Server {
     }
 
     //functions for endpoints
-    private Object addUser(Request req, Response res) throws ResolutionException {
+    public Object addUser(Request req, Response res) throws ResolutionException {
         var user = new Gson().fromJson(req.body(), UserData.class);
         UserService userService1 = userService;
         try {
@@ -98,7 +98,7 @@ public class Server {
 
     }
 
-    private Object loginUser(Request req, Response res) throws ResolutionException {
+    public Object loginUser(Request req, Response res) throws ResolutionException {
         var user = new Gson().fromJson(req.body(), UserData.class);
         UserService userService1 = userService;
         try {
@@ -124,7 +124,7 @@ public class Server {
         }
     }
 
-    private Object deleteSession(Request req, Response res) throws ResolutionException {
+    public Object deleteSession(Request req, Response res) throws ResolutionException {
         var theauth = req.headers("Authorization");
         var authService1 = authService;
         try {
@@ -146,7 +146,7 @@ public class Server {
         }
     }
 
-    private Object listGames(Request req, Response res) throws ResolutionException, DataAccessException {
+    public Object listGames(Request req, Response res) throws ResolutionException, DataAccessException {
         var authstr = req.headers("Authorization");
         var authService1 = authService;
         var gameService1 = gameService;

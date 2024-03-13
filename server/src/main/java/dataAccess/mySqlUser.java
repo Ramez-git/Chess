@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class mySqlUser implements DataAccessUser {
+
     final AuthService authService;
     private final String[] createStatements = {
             """
