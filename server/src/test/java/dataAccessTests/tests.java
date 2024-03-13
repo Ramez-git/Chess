@@ -6,6 +6,7 @@ import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import service.AuthService;
 import service.GameService;
 import service.UserService;
@@ -37,7 +38,8 @@ public class tests {
     }
     @Test
     public void createauthsuccess() throws SQLException, DataAccessException {
-        authService.createAuth(new UserData("usr","pass","myemail"));
+        var x = authService.createAuth(new UserData("usr","pass","myemail"));
+        assertNotEquals(x,null);
     }
     @Test
     public void createauthfail() throws SQLException, DataAccessException {
@@ -50,7 +52,8 @@ public class tests {
     @Test
     public void getusrsuccess() throws SQLException, DataAccessException {
         var x =userService.CreateUser(new UserData("dude","pass","mail"));
-        authService.getusr(x);
+        x=authService.getusr(x);
+        assertNotEquals(x,null);
     }
     @Test
     public void getusrfail() throws SQLException, DataAccessException {
@@ -63,7 +66,8 @@ public class tests {
     @Test
     public void getAuthSuccess() throws SQLException, DataAccessException {
         userService.CreateUser(new UserData("dude","pass","mail"));
-        authService.getAuth(new UserData("dude","pass","mail"));
+        var x =authService.getAuth(new UserData("dude","pass","mail"));
+        assertNotEquals(x,null);
     }
     @Test
     public void getAuthfail(){
@@ -77,6 +81,7 @@ public class tests {
     public void deleteSessionSuccess() throws SQLException, DataAccessException {
         var x = userService.CreateUser(new UserData("dude","pass","mail"));
         authService.deleteSession(x);
+        assertNotEquals(x,null);
     }
     @Test
     public void deleteSessionFail() throws SQLException, DataAccessException {
@@ -89,12 +94,14 @@ public class tests {
     @Test
     public void deleteAllauthsuccess() throws SQLException, DataAccessException {
         authService.deleteAll();
+
     }
     @Test
     public void loginsuccess() throws SQLException, DataAccessException {
         var x =userService.CreateUser(new UserData("dude","pass","mail"));
         authService.deleteSession(x);
-        userService.login(new UserData("dude","pass","mail"));
+        x= userService.login(new UserData("dude","pass","mail"));
+        assertNotNull(x);
     }
     @Test
     public void loginfail(){
@@ -110,7 +117,8 @@ public class tests {
     }
     @Test
     public void creategamesuccess() throws SQLException, DataAccessException {
-        gameService.createGame("mygame");
+        var x =gameService.createGame("mygame");
+        assertNotNull(x);
     }
     @Test
     public void creategamefail(){
@@ -124,6 +132,7 @@ public class tests {
     public void updategamesuccess() throws SQLException, DataAccessException {
         var x =gameService.createGame("mygame");
         gameService.updateGame(x,null,null);
+        assertNotNull(x);
     }
     @Test
     public void updategamefail(){
@@ -135,7 +144,8 @@ public class tests {
     }
     @Test
     public void listgamestest() throws SQLException, DataAccessException {
-        gameService.listGames();
+        var x = gameService.listGames();
+        assertNotNull(x);
     }
     @Test
     public void deleteallgame() throws SQLException, DataAccessException {
@@ -145,6 +155,7 @@ public class tests {
     public void getgamesuccess() throws SQLException, DataAccessException {
     var x =gameService.createGame("mygame");
     gameService.getGame(x);
+    assertNotNull(x);
     }
     @Test
     public void getgamefail(){
