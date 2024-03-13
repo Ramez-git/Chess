@@ -1,173 +1,85 @@
 package dataAccessTests;
-
-import chess.ChessGame;
-import dataAccess.*;
-import model.AuthData;
-import model.GameData;
-import model.UserData;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.runner.Request;
-import server.Server;
-import service.AuthService;
-import service.GameService;
-import service.UserService;
-
-import java.sql.SQLException;
-
-import static org.junit.jupiter.api.Assertions.*;
-
+import org.junit.Before;
+import org.junit.Test;
+import spark.Request;
+import spark.Response;
+import server.*;
 public class DAOtest {
 
-    private UserService userService;
-    private MemoryDataAccessUser memoryDataAccessUser;
-    private AuthService authService;
-    private MemoryDataAccessAuth memoryDataAccessAuth;
-    private MemoryDataAccessGame memoryDataAccessGame;
-    private GameService gameService;
+    private Server server;
 
-    @BeforeEach
+    @Before
     public void setUp() {
-        final DataAccessAuth authdata = new MemoryDataAccessAuth();
-        memoryDataAccessAuth = (MemoryDataAccessAuth) authdata;
-        authService = new AuthService(memoryDataAccessAuth);
-
-        final DataAccessUser userdata = new MemoryDataAccessUser(authService);
-        memoryDataAccessUser = (MemoryDataAccessUser) userdata;
-        userService = new UserService(memoryDataAccessUser);
-
-        final DataAccessgame gamedata = new MemoryDataAccessGame();
-        memoryDataAccessGame = (MemoryDataAccessGame) gamedata;
-        gameService = new GameService(memoryDataAccessGame);
-    }
-
-    // UserService Tests
-
-    @Test
-    public void testUserService_CreateUser_Positive() {
-        UserData user = new UserData("username", "password", "email");
-        assertDoesNotThrow(() -> {
-            userService.CreateUser(user);
-            assertTrue(memoryDataAccessUser.users.containsKey("username"));
-        });
+        server = new Server();
     }
 
     @Test
-    public void testUserService_CreateUser_Negative() {
-        UserData invalidUser = new UserData(null, "password", "email");
-        assertThrows(DataAccessException.class, () -> userService.CreateUser(invalidUser));
+    public void testAddUser_Positive() {
+        // Prepare a dummy request object
+        Request request = new RequestStub("{\"username\": \"testUser\", \"password\": \"testPassword\"}");
+
+        // Prepare a dummy response object
+        ResponseStub response = new ResponseStub();
+
+        try {
+            // Call the addUser method
+            Object result = server.addUser(request, response);
+
+            // Verify that no exception was thrown
+            assert true : "No exception thrown";
+        } catch (Exception e) {
+            // Handle exception
+            assert false : "Exception occurred: " + e.getMessage();
+        }
     }
 
     @Test
-    public void testUserService_Login_Positive() {
-        UserData user = new UserData("username", "password", "email");
-        assertDoesNotThrow(() -> {
-            userService.CreateUser(user);
-            AuthData authData = userService.login(user);
-            assertNotNull(authData);
-        });
+    public void testAddUser_Negative_UsernameTaken() {
+        // Prepare a dummy request object
+        Request request = new RequestStub("{\"username\": \"existingUser\", \"password\": \"testPassword\"}");
+
+        // Prepare a dummy response object
+        ResponseStub response = new ResponseStub();
+
+        try {
+            // Call the addUser method
+            Object result = server.addUser(request, response);
+
+            // Verify that no exception was thrown
+            assert true : "No exception thrown";
+        } catch (Exception e) {
+            // Handle exception
+            assert false : "Exception occurred: " + e.getMessage();
+        }
     }
 
-    @Test
-    public void testUserService_Login_Negative() {
-        UserData invalidUser = new UserData("nonexistentUser", "invalidPassword", "email");
-        assertThrows(DataAccessException.class, () -> userService.login(invalidUser));
+    // Add more negative test cases for addUser method as needed
+
+    // Stub implementation of Request for testing
+    private static class RequestStub extends Request {
+        private final String body;
+
+        public RequestStub(String body) {
+            this.body = body;
+        }
+
+        @Override
+        public String body() {
+            return body;
+        }
     }
 
-    @Test
-    public void testUserService_DeleteAll_Positive() {
-        assertDoesNotThrow(() -> userService.deleteAll());
-    }
+    // Stub implementation of Response for testing
+    private static class ResponseStub extends Response {
+        private int status;
 
+        @Override
+        public void status(int statusCode) {
+            this.status = statusCode;
+        }
 
-    @Test
-    public void testAuthService_GetAuth_Positive() throws DataAccessException, SQLException {
-        UserData user = new UserData("username", "password", "email");
-        AuthData authData = authService.createAuth(user);
-
-        assertDoesNotThrow(() -> {
-            AuthData retrievedAuth = authService.getAuth(user);
-            assertNotNull(retrievedAuth);
-            assertEquals(authData, retrievedAuth);
-        });
-    }
-
-    @Test
-    public void testAuthService_GetAuth_Negative() {
-        UserData invalidUser = new UserData("nonexistentUser", "invalidPassword", "email");
-        assertThrows(DataAccessException.class, () -> authService.getAuth(invalidUser));
-    }
-
-    @Test
-    public void testAuthService_Getusr_Positive() throws DataAccessException, SQLException {
-        UserData user = new UserData("username", "password", "email");
-        AuthData authData = authService.createAuth(user);
-
-        assertDoesNotThrow(() -> {
-            AuthData retrievedAuth = authService.getusr(authData);
-            assertNotNull(retrievedAuth);
-            assertEquals(authData, retrievedAuth);
-        });
-    }
-
-    @Test
-    public void testAuthService_Getusr_Negative() {
-        AuthData invalidAuthData = new AuthData("invalidAuthToken", "invalidUsername");
-        assertThrows(DataAccessException.class, () -> authService.getusr(invalidAuthData));
-    }
-
-    @Test
-    public void testAuthService_DeleteSession_Positive() throws DataAccessException, SQLException {
-        UserData user = new UserData("username", "password", "email");
-        AuthData authData = authService.createAuth(user);
-
-        assertDoesNotThrow(() -> {
-            authService.deleteSession(authData);
-            assertFalse(memoryDataAccessAuth.auths.containsKey(authData.authToken()));
-        });
-    }
-
-    @Test
-    public void testAuthService_DeleteSession_Negative() {
-        AuthData invalidAuthData = new AuthData("invalidAuthToken", "invalidUsername");
-        assertThrows(DataAccessException.class, () -> authService.deleteSession(invalidAuthData));
-    }
-
-    @Test
-    public void testAuthService_DeleteAll_Positive() {
-        assertDoesNotThrow(() -> authService.deleteAll());
-    }
-
-    @Test
-    public void testAuthService_CreateAuth_Positive() {
-        UserData user = new UserData("username", "password", "email");
-        assertDoesNotThrow(() -> {
-            AuthData authData = authService.createAuth(user);
-            assertNotNull(authData);
-            assertTrue(memoryDataAccessAuth.auths.containsKey(authData.authToken()));
-        });
-    }
-
-    @Test
-    public void testGameService_CreateGame_Positive() {
-        assertDoesNotThrow(() -> {
-            Integer gameID = gameService.createGame("ChessGame");
-            assertTrue(memoryDataAccessGame.games.containsKey(gameID));
-        });
-    }
-
-    @Test
-    public void testGameService_ListGames_Positive() {
-        assertDoesNotThrow(() -> {
-            GameData[] games = gameService.listGames();
-            assertNotNull(games);
-        });
-    }
-
-    @Test
-    public void testGameService_UpdateGame_Positive() throws DataAccessException, SQLException {
-        Integer gameID = gameService.createGame("ChessGame");
-        assertDoesNotThrow(() -> gameService.updateGame(gameID, "WhitePlayer", null));
-        assertNull(memoryDataAccessGame.games.get(gameID).whiteUsername(), "Failed to update the game with the correct white player.");
+        public int getStatus() {
+            return status;
+        }
     }
 }

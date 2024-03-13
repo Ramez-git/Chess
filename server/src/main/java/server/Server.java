@@ -235,7 +235,7 @@ public class Server {
 
     }
 
-    private Object deleteEVERYTHING(Request req, Response res) throws ResolutionException {
+    public Object deleteEVERYTHING(Request req, Response res) throws ResolutionException {
         try {
             var authService1 = authService;
             var gameService1 = gameService;
