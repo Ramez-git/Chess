@@ -12,13 +12,16 @@ public class MemoryDataAccessAuth implements DataAccessAuth {
     public final HashMap<String, AuthData> auths = new HashMap<>();
 
     public AuthData createAuth(UserData user) throws DataAccessException {
+        if(user.username()==null){
+            throw new DataAccessException("Error: description");
+        }
         var authmyuser = new AuthData(UUID.randomUUID().toString(), user.username());
         auths.put(authmyuser.authToken(), authmyuser);
         return authmyuser;
     }
 
 
-    public void deleteAuth(AuthData authtoken) throws DataAccessException {
+    private void deleteAuth(AuthData authtoken) throws DataAccessException {
         if (auths.get(authtoken.authToken()) != null) {
             auths.remove(authtoken.authToken());
         } else {

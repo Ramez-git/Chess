@@ -36,6 +36,9 @@ public class mySqlAuth implements DataAccessAuth {
 
     @Override
     public AuthData createAuth(UserData user) throws DataAccessException, SQLException {
+        if(user.username() == null){
+            throw new DataAccessException("Error: description");
+        }
         var authsdata1 = new AuthData(UUID.randomUUID().toString(), user.username());
         var authToken = authsdata1.authToken();
         var statement = "INSERT INTO auths (username, authToken) VALUES (?, ?)";
@@ -54,6 +57,9 @@ public class mySqlAuth implements DataAccessAuth {
 
     @Override
     public AuthData getusr(AuthData authtok) throws DataAccessException, SQLException {
+        if(authtok == null ){
+            throw new DataAccessException("Error: description");
+        }
         var statement = "SELECT username, authToken FROM auths WHERE authToken=?";
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement)) {
