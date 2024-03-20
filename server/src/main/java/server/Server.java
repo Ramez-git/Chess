@@ -56,6 +56,8 @@ public class Server {
         Spark.delete("/db", this::deleteEVERYTHING);
         Spark.put("/game", this::joinGame);
         Spark.get("/game", this::listGames);
+        var myfacade = new ServerFacade(this);
+        myfacade.register(new UserData("test","test","test"));
         //end making endpoints
         return Spark.port();
     }
@@ -277,7 +279,7 @@ public class Server {
         }
     }
 
-    public class message {
+    public static class message {
         @SerializedName("message")
         private String message;
 
