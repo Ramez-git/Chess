@@ -1,61 +1,78 @@
 package server;
 
 import com.google.gson.Gson;
+import exception.ResponseException;
 import model.UserData;
 import java.io.IOException;
-import server.*;
-import spark.Request;
-import spark.Response;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.*;
+
 public class ServerFacade {
-    private final Server server;
+    private final String serverUrl;
 
-    public ServerFacade(Server server) {
-        this.server = server;
+    public ServerFacade() {
+        this.serverUrl = "http://localhost:8080/";
     }
 
-    public Object register(UserData user) {
+public String register(UserData user) throws ResponseException {
+this.makeRequest("POST","/user",user,UserData.class);
+return "success";
+    }
+    public String login(UserData user) throws ResponseException {
+        this.makeRequest("POST","/user",user,UserData.class);
+        return "success";
+    }
+    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
         try {
-            // Constructing a dummy Request object
-            Request req = createDummyRequest(user.username(), user.password(), user.email());
+            URL url = (new URI(serverUrl + path)).toURL();
+            HttpURLConnection http = (HttpURLConnection) url.openConnection();
+            http.setRequestMethod(method);
+            http.setDoOutput(true);//have a body
+            writeBody(request, http);
 
-            // Constructing a dummy Response object
-            Response res = createDummyResponse();
-
-            // Calling addUser method from Server with the constructed Request and Response objects
-            return server.addUser(req, res);
-        } catch (Exception e) {
-            // Handle any exceptions here
-            return new Gson().toJson(new Server.message("Internal Server Error"));
+            http.connect();
+            throwIfNotSuccessful(http);
+            return readBody(http, responseClass);
+        } catch (Exception ex) {
+            throw new ResponseException(500, ex.getMessage());
         }
     }
 
-    // Method to create a dummy Request object
-    private Request createDummyRequest(String username, String password,String email) {
-        return new DummyRequest(username, password,email);
-    }
 
-    // Method to create a dummy Response object
-    private Response createDummyResponse() {
-        return new DummyResponse();
-    }
-
-    // DummyRequest class implementing spark.Request
-    private static class DummyRequest extends Request {
-        private final String username;
-        private final String password;
-        private final String email;
-
-        public DummyRequest(String username, String password,String email) {
-            this.username = username;
-            this.password = password;
-            this.email = email;
+    private static void writeBody(Object request, HttpURLConnection http) throws IOException {
+        if (request != null) {
+            http.addRequestProperty("Content-Type", "application/json");//auth here
+            String reqData = new Gson().toJson(request);
+            try (OutputStream reqBody = http.getOutputStream()) {
+                reqBody.write(reqData.getBytes());
+            }
         }
-
-        // Implement required methods based on your usage
     }
 
-    // DummyResponse class implementing spark.Response
-    private static class DummyResponse extends Response {
-        // Implement required methods based on your usage
+    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
+        var status = http.getResponseCode();
+        if (!isSuccessful(status)) {
+            throw new ResponseException(status, "failure: " + status);
+        }
+    }
+
+    private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws IOException {
+        T response = null;
+        if (http.getContentLength() < 0) {
+            try (InputStream respBody = http.getInputStream()) {
+                InputStreamReader reader = new InputStreamReader(respBody);
+                if (responseClass != null) {
+                    response = new Gson().fromJson(reader, responseClass);
+                }
+            }
+        }
+        return response;
+    }
+
+
+    private boolean isSuccessful(int status) {
+        return status / 100 == 2;
     }
 }
