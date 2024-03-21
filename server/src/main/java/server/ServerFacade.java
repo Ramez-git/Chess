@@ -2,6 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import exception.ResponseException;
+import model.AuthData;
 import model.UserData;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,22 +17,69 @@ public class ServerFacade {
         this.serverUrl = "http://localhost:8080/";
     }
 
-public String register(UserData user) throws ResponseException {
-this.makeRequest("POST","/user",user,UserData.class);
-return "success";
+public AuthData register(UserData user) throws ResponseException {
+return this.makeRequestwithbody("POST","/user",user,AuthData.class);
     }
-    public String login(UserData user) throws ResponseException {
-        this.makeRequest("POST","/user",user,UserData.class);
+    public AuthData login(UserData user) throws ResponseException {
+        return this.makeRequestwithbody("POST","/session",user, AuthData.class);
+    }
+    public String creategame(String gamename,String auth) throws ResponseException {
+        this.makeRequestwithauthandbody("POST","/game",gamename, String.class,auth);
         return "success";
     }
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
+    public Object listgames(String auth) throws ResponseException {
+        return this.makeRequestwithoutbody("GET","/game",Object.class, auth);
+    }
+    public Object joingame(String auth , String color) throws ResponseException {
+        return this.makeRequestwithauthandbody("GET","/game",color, Object.class,auth);
+    }
+    public Object observer(String auth, String ID) throws ResponseException {
+        this.makeRequestwithauthandbody("GET","/game",ID,Object.class,auth);
+        return "success";
+    }
+    public void logout(String auth) throws ResponseException {
+        this.makeRequestwithoutbody("DELETE","/session", Object.class,auth);
+    }
+    private <T> T makeRequestwithbody(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
-            http.setDoOutput(true);//have a body
+            http.setDoOutput(true);
             writeBody(request, http);
 
+            http.connect();
+            throwIfNotSuccessful(http);
+            return readBody(http, responseClass);
+        } catch (Exception ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
+    }
+    private <T> T makeRequestwithoutbody(String method, String path, Class<T> responseClass,String auth) throws ResponseException {
+        try {
+            URL url = (new URI(serverUrl + path)).toURL();
+            HttpURLConnection http = (HttpURLConnection) url.openConnection();
+            http.setRequestMethod(method);
+            http.setDoOutput(false);
+            http.addRequestProperty("Authorization", auth);
+            http.connect();
+            throwIfNotSuccessful(http);
+            return readBody(http, responseClass);
+        } catch (Exception ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
+    }
+    private <T> T makeRequestwithauthandbody(String method, String path, Object request, Class<T> responseClass, String auth) throws ResponseException {
+        try {
+            URL url = (new URI(serverUrl + path)).toURL();
+            HttpURLConnection http = (HttpURLConnection) url.openConnection();
+            http.setRequestMethod(method);
+            http.setDoOutput(true);
+            http.addRequestProperty("Authorization", auth);
+            String reqData = new Gson().toJson(request);
+            try (OutputStream reqBody = http.getOutputStream()) {
+                reqBody.write(reqData.getBytes());
+            }
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);

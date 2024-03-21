@@ -1,6 +1,8 @@
 package ui;
 
+import com.google.gson.Gson;
 import exception.ResponseException;
+import model.AuthData;
 import model.UserData;
 
 import java.util.Arrays;
@@ -9,10 +11,11 @@ import java.util.Scanner;
 import static ui.EscapeSequences.*;
 
 import server.ServerFacade;
-import server.ServerFacade.*;
+import server.Server.GamesWrapper;
 public class UIclient {
     boolean logged_in=false;
     boolean quit =false;
+    private AuthData auth;
     private Scanner input;
 public UIclient(){
     System.out.println(BLACK_QUEEN + " Welcome to 240 chess. Type Help to get started. "+ BLACK_QUEEN);
@@ -45,29 +48,33 @@ public void run() throws ResponseException {
             }
             else if(Objects.equals(cmd, "create")){
                 if(params.length == 1){
-                    //send to facade
+                    System.out.println(myserverf.creategame(params[0],auth.authToken()));
                 }
                 else{
                     throw new RuntimeException("not enough params create game");
                 }
             } else if (Objects.equals(cmd, "list")) {
-                //send to facade
+                var f = myserverf.listgames(auth.authToken());
+                System.out.println(f);
             } else if (Objects.equals(cmd, "join")) {
                 if(params.length == 2){
-                    //send to facade
+                    myserverf.joingame(auth.authToken(),params[1]);
                 }
                 else{
                     throw new RuntimeException("not enough params create game");
                 }
             } else if (Objects.equals(cmd, "observe")) {
                 if(params.length == 1){
-                    //send to facade
+                    myserverf.observer(auth.authToken(), params[0]);
+                    System.out.println("success");
                 }
                 else{
                     throw new RuntimeException("not enough params create game");
                 }
             } else if (Objects.equals(cmd, "logout")) {
-                //send to facade
+                myserverf.logout(auth.authToken());
+                System.out.println("success");
+                logged_in = false;
             } else if (Objects.equals(cmd, "quit")) {
                 break;
             }
@@ -92,7 +99,9 @@ public void run() throws ResponseException {
             }
             else if(Objects.equals(cmd, "register")){
                 if(params.length == 3){
-                    myserverf.register(new UserData(params[0],params[1],params[2]));
+                    var str = myserverf.register(new UserData(params[0],params[1],params[2]));
+                    auth = new Gson().fromJson(String.valueOf(str), AuthData.class);
+                    System.out.println("Success");
                     logged_in= true;
                 }
                 else{
@@ -100,7 +109,9 @@ public void run() throws ResponseException {
                 }
             } else if (Objects.equals(cmd, "login")) {
                 if(params.length == 2){
-                    //send it to the facade
+                    var str = myserverf.login(new UserData(params[0],params[1],null));
+                    auth = new Gson().fromJson(String.valueOf(str), AuthData.class);
+                    System.out.println("Success");
                     logged_in=true;
                 }
                 else{
