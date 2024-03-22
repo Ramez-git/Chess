@@ -50,8 +50,10 @@ public class UIclient {
                             + SET_TEXT_COLOR_WHITE + " - with possible commands\n");
                 } else if (Objects.equals(cmd, "create")) {
                     if (params.length == 1) {
-
                         System.out.println(myserverf.creategame(new gamename1(params[0]), auth.authToken()));
+                        printChessboard1();
+                        System.out.println("            ");
+                        printChessboard2();
                     } else {
                         throw new RuntimeException("not enough params create game");
                     }
@@ -137,6 +139,67 @@ public class UIclient {
         public wrapper(String playerColor,String gameID){
             this.playerColor = playerColor;
             this.gameID=gameID;
+        }
+    }
+    public static void printChessboard1() {
+        char[][] letters = {
+                {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'},
+                {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
+                {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'}
+        };
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if ((i + j) % 2 == 0) {
+                    System.out.print("\u001B[47m"); // White background
+                } else {
+                    System.out.print("\u001B[40m"); // Black background
+                }
+                if (i <= 5) {
+                    System.out.print(SET_TEXT_COLOR_BLUE+letters[i][j] + " ");
+                }
+                else{
+                    System.out.print(SET_TEXT_COLOR_RED+letters[i][j] + " ");
+                }
+
+            }
+            System.out.println("\u001B[0m"); // Reset colors and move to the next row
+        }
+    }
+    public static void printChessboard2() {
+        char[][] letters = {
+                {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'e'},
+                {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
+                {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}
+        };
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if ((i + j) % 2 == 0) {
+                    System.out.print("\u001B[47m"); // White background
+                } else {
+                    System.out.print("\u001B[40m"); // Black background
+                }
+                if (i <= 5) {
+
+                    System.out.print(SET_TEXT_COLOR_RED+letters[i][j] + " ");
+                }
+                else{
+                    System.out.print(SET_TEXT_COLOR_BLUE+letters[i][j] + " ");
+                }
+
+            }
+            System.out.println("\u001B[0m"); // Reset colors and move to the next row
         }
     }
 
