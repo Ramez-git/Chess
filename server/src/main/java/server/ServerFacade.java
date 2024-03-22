@@ -23,18 +23,18 @@ return this.makeRequestwithbody("POST","/user",user,AuthData.class);
     public AuthData login(UserData user) throws ResponseException {
         return this.makeRequestwithbody("POST","/session",user, AuthData.class);
     }
-    public String creategame(String gamename,String auth) throws ResponseException {
-        this.makeRequestwithauthandbody("POST","/game",gamename, String.class,auth);
+    public String creategame(Object gamename,String auth) throws ResponseException {
+        this.makeRequestwithauthandbody("POST","/game",gamename, Object.class,auth);
         return "success";
     }
     public Object listgames(String auth) throws ResponseException {
         return this.makeRequestwithoutbody("GET","/game",Object.class, auth);
     }
-    public Object joingame(String auth , String color) throws ResponseException {
-        return this.makeRequestwithauthandbody("GET","/game",color, Object.class,auth);
+    public Object joingame(String auth , Object color) throws ResponseException {
+        return this.makeRequestwithauthandbody("PUT","/game",color, Object.class,auth);
     }
-    public Object observer(String auth, String ID) throws ResponseException {
-        this.makeRequestwithauthandbody("GET","/game",ID,Object.class,auth);
+    public Object observer(String auth, Object ID) throws ResponseException {
+        this.makeRequestwithauthandbody("PUT","/game",ID,Object.class,auth);
         return "success";
     }
     public void logout(String auth) throws ResponseException {
@@ -81,6 +81,7 @@ return this.makeRequestwithbody("POST","/user",user,AuthData.class);
                 reqBody.write(reqData.getBytes());
             }
             http.connect();
+
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
         } catch (Exception ex) {

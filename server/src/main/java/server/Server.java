@@ -15,6 +15,7 @@ import spark.Spark;
 
 import java.lang.module.ResolutionException;
 import java.sql.SQLException;
+import java.util.Locale;
 import java.util.Objects;
 
 public class Server {
@@ -198,24 +199,24 @@ public class Server {
         var gameService1 = gameService;
         var authService1 = authService;
         try {
-            if (Objects.equals(game.playerColor, "WHITE")) {
+            if (Objects.equals(game.playerColor.toUpperCase(), "WHITE")) {
                 var x = Integer.parseInt(game.gameID);
                 var y = authService1.getusr(new AuthData(authstr, "")).username();
                 gameService1.updateGame(x, y, "check");
                 res.status(200);
-                return "";
-            } else if (Objects.equals(game.playerColor, "BLACK")) {
+                return new Gson().toJson("success");
+            } else if (Objects.equals(game.playerColor.toUpperCase(), "BLACK")) {
                 var x = Integer.parseInt(game.gameID);
                 var y = authService1.getusr(new AuthData(authstr, "")).username();
                 gameService1.updateGame(x, "check", y);
                 res.status(200);
-                return "";
+                return new Gson().toJson("success");
             } else {
                 authService1.getusr(new AuthData(authstr, ""));
                 var x = Integer.parseInt(game.gameID);
                 gameService1.updateGame(x, null, null);
                 res.status(200);
-                return "";
+                return new Gson().toJson("success");
             }
 
         } catch (DataAccessException | SQLException e) {

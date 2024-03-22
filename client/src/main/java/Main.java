@@ -1,4 +1,5 @@
-import chess.*;
+import chess.ChessGame;
+import chess.ChessPiece;
 import exception.ResponseException;
 import ui.UIclient;
 
