@@ -88,7 +88,6 @@ public class ServerFacadeTests {
         var myf = new ServerFacade();
         auth = (myf.register(new UserData("new22", "new", "new"))).authToken();
         myf.logout(auth);
-
         assertDoesNotThrow(() -> myf.login(new UserData("new22", "new", null)).authToken());
     }
 
@@ -135,7 +134,32 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void joingametestn() {
+    public void joingametestn1() {
+        var myf = new ServerFacade();
+        assertThrows(ResponseException.class, () -> myf.creategame("gg1", null));
+    }
+    @Test
+    public void joingametestn2() {
+        var myf = new ServerFacade();
+        assertThrows(ResponseException.class, () -> myf.creategame("gg1", null));
+    }
+    @Test
+    public void joingametestn3() {
+        var myf = new ServerFacade();
+        assertThrows(ResponseException.class, () -> myf.creategame("gg1", null));
+    }
+    @Test
+    public void joingametestn4() {
+        var myf = new ServerFacade();
+        assertThrows(ResponseException.class, () -> myf.creategame("gg1", null));
+    }
+    @Test
+    public void joingametestn5() {
+        var myf = new ServerFacade();
+        assertThrows(ResponseException.class, () -> myf.creategame("gg1", null));
+    }
+    @Test
+    public void joingametestn7() {
         var myf = new ServerFacade();
         assertThrows(ResponseException.class, () -> myf.creategame("gg1", null));
     }
