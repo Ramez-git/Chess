@@ -2,7 +2,6 @@ package dataAccess;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import model.AuthData;
 import model.GameData;
 import service.AuthService;
 
@@ -15,6 +14,7 @@ import java.util.Objects;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 public class mysqlGame implements DataAccessgame {
+    final AuthService authService;
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS games (
@@ -29,7 +29,7 @@ public class mysqlGame implements DataAccessgame {
             """
     };
     int ID = 0;
-    final AuthService authService;
+
     public mysqlGame(AuthService authService) throws DataAccessException {
         this.authService = authService;
         DatabaseManager.createDatabase();
@@ -70,8 +70,7 @@ public class mysqlGame implements DataAccessgame {
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
                         return readgame(rs);
-                    }
-                    else{
+                    } else {
                         throw new DataAccessException("game does not exist");
                     }
                 }
@@ -102,7 +101,8 @@ public class mysqlGame implements DataAccessgame {
                 myBlack = null;
             } else {
                 myBlack = mygame.blackUsername();
-            }}
+            }
+        }
         if (!Objects.equals(Black, "check") && mygame.blackUsername() != null) {
             throw new DataAccessException("Error: already taken");
         }
@@ -119,29 +119,28 @@ public class mysqlGame implements DataAccessgame {
             myWhite = null;
             myBlack = null;
         }
-            var statement = "UPDATE games SET whiteUsername=?, blackUsername=? WHERE id =?";
-            try (var conn = DatabaseManager.getConnection()) {
-                try (var ps = conn.prepareStatement(statement)) {
-                    ps.setString(1, myWhite);
-                    ps.setString(2, myBlack);
-                    ps.setInt(3, mygame.gameID());
-                    ps.executeUpdate();
-                }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
+        var statement = "UPDATE games SET whiteUsername=?, blackUsername=? WHERE id =?";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, myWhite);
+                ps.setString(2, myBlack);
+                ps.setInt(3, mygame.gameID());
+                ps.executeUpdate();
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-
+    }
 
 
     @Override
     public Integer createGame(String Gamename) throws DataAccessException, SQLException {
-        if(Gamename==null){
+        if (Gamename == null) {
             throw new DataAccessException("name not provided");
         }
         var statement = "INSERT INTO games (whiteUsername, blackUsername, gameName, json) VALUES (?, ?, ?, ?)";
         try (var conn = DatabaseManager.getConnection()) {
-            try (var ps = conn.prepareStatement(statement,RETURN_GENERATED_KEYS)) {
+            try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 ps.setString(1, null);
                 ps.setString(2, null);
                 ps.setString(3, Gamename);
@@ -150,13 +149,11 @@ public class mysqlGame implements DataAccessgame {
                 var rs = ps.getGeneratedKeys();
                 if (rs.next()) {
                     return rs.getInt(1);
-                }
-                else{
+                } else {
                     throw new SQLException("autoincrement err");
                 }
             }
-        }
-        catch (SQLException e){
+        } catch (SQLException e) {
             throw new DataAccessException("Error: bad request");
         }
     }

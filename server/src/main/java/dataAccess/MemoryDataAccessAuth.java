@@ -12,7 +12,7 @@ public class MemoryDataAccessAuth implements DataAccessAuth {
     public final HashMap<String, AuthData> auths = new HashMap<>();
 
     public AuthData createAuth(UserData user) throws DataAccessException {
-        if(user.username()==null){
+        if (user.username() == null) {
             throw new DataAccessException("Error: description");
         }
         var authmyuser = new AuthData(UUID.randomUUID().toString(), user.username());

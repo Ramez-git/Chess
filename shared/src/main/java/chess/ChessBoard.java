@@ -9,19 +9,6 @@ import java.util.Arrays;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ChessBoard that = (ChessBoard) o;
-        return Arrays.deepEquals(chessboard, that.chessboard);
-    }
-
-    @Override
-    public int hashCode() {
-        return Arrays.deepHashCode(chessboard);
-    }
-
     public ChessPiece[][] chessboard =
             {{null, null, null, null, null, null, null, null},
                     {null, null, null, null, null, null, null, null},
@@ -34,6 +21,19 @@ public class ChessBoard {
 
     public ChessBoard() {
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessBoard that = (ChessBoard) o;
+        return Arrays.deepEquals(chessboard, that.chessboard);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(chessboard);
     }
 
     /**
@@ -99,7 +99,7 @@ public class ChessBoard {
     }
 
 
-    public void removePiece(ChessPosition myPosition){
-        chessboard[myPosition.getRow()][myPosition.getColumn()]=null;
+    public void removePiece(ChessPosition myPosition) {
+        chessboard[myPosition.getRow()][myPosition.getColumn()] = null;
     }
 }

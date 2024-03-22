@@ -1,13 +1,13 @@
 package clientTests;
 
 import exception.ResponseException;
-import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import server.Server;
 import server.ServerFacade;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 public class ServerFacadeTests {
@@ -32,34 +32,38 @@ public class ServerFacadeTests {
     public void sampleTest() {
         Assertions.assertTrue(true);
     }
+
     @Test
     @Order(1)
     public void registertestp() throws ResponseException {
-        var myf =new  ServerFacade();
-        auth = (myf.register(new UserData("new1","new","new"))).authToken();
+        var myf = new ServerFacade();
+        auth = (myf.register(new UserData("new1", "new", "new"))).authToken();
         assertDoesNotThrow(() -> auth);
     }
+
     @Test
     @Order(2)
     public void registertestn() throws ResponseException {
-        var myf =new  ServerFacade();
+        var myf = new ServerFacade();
 
         assertThrows(ResponseException.class, () -> myf.register(new UserData("new", "new", null)));
     }
+
     @Test
     @Order(3)
     public void logintestp() throws ResponseException {
-        var myf =new ServerFacade();
-        auth = (myf.register(new UserData("new","new","new"))).authToken();
+        var myf = new ServerFacade();
+        auth = (myf.register(new UserData("new", "new", "new"))).authToken();
         myf.logout(auth);
-        auth = myf.login(new UserData("new","new",null)).authToken();
+        auth = myf.login(new UserData("new", "new", null)).authToken();
         assertDoesNotThrow(() -> auth);
     }
+
     @Test
     @Order(4)
     public void logouttestp() throws ResponseException {
-        var myf =new  ServerFacade();
-        auth = (myf.register(new UserData("ne1w","new","new"))).authToken();
+        var myf = new ServerFacade();
+        auth = (myf.register(new UserData("ne1w", "new", "new"))).authToken();
         assertDoesNotThrow(() -> myf.logout(auth));
     }
 
@@ -67,41 +71,73 @@ public class ServerFacadeTests {
     @Test
     @Order(5)
     public void logintestn() throws ResponseException {
-        var myf =new  ServerFacade();
+        var myf = new ServerFacade();
 
-        assertThrows(ResponseException.class,() -> myf.login(new UserData("new","ne111w","new")));
+        assertThrows(ResponseException.class, () -> myf.login(new UserData("new", "ne111w", "new")));
     }
+
     @Test
     @Order(6)
-    public void logouttestn(){
-        var myf =new  ServerFacade();
-        assertThrows(ResponseException.class,() -> myf.logout(null));
+    public void logouttestn() {
+        var myf = new ServerFacade();
+        assertThrows(ResponseException.class, () -> myf.logout(null));
     }
+
     @Test
     public void creategametestp() throws ResponseException {
         var myf = new ServerFacade();
-        auth = (myf.register(new UserData("new22","new","new"))).authToken();
+        auth = (myf.register(new UserData("new22", "new", "new"))).authToken();
         myf.logout(auth);
 
-        assertDoesNotThrow(() -> myf.login(new UserData("new22","new",null)).authToken());
+        assertDoesNotThrow(() -> myf.login(new UserData("new22", "new", null)).authToken());
     }
+
     @Test
-    public void creategametestn(){
+    public void creategametestn() {
         var myf = new ServerFacade();
-        assertThrows(ResponseException.class,() -> myf.creategame("gg1",null));
+        assertThrows(ResponseException.class, () -> myf.creategame("gg1", null));
     }
+
     @Test
     public void listgametestp() throws ResponseException {
         var myf = new ServerFacade();
-        auth = (myf.register(new UserData("new222","new","new"))).authToken();
+        auth = (myf.register(new UserData("new222", "new", "new"))).authToken();
         myf.logout(auth);
-        assertDoesNotThrow(() -> myf.login(new UserData("new222","new",null)).authToken());
-    }
-    @Test
-    public void listgametestn(){
-        var myf = new ServerFacade();
-        assertThrows(ResponseException.class,() -> myf.creategame("gg1",null));
+        assertDoesNotThrow(() -> myf.login(new UserData("new222", "new", null)).authToken());
     }
 
+    @Test
+    public void listgametestn() {
+        var myf = new ServerFacade();
+        assertThrows(ResponseException.class, () -> myf.creategame("gg1", null));
+    }
+
+    @Test
+    public void observegametestp() throws ResponseException {
+        var myf = new ServerFacade();
+        auth = (myf.register(new UserData("new1222", "new", "new"))).authToken();
+        myf.logout(auth);
+        assertDoesNotThrow(() -> myf.login(new UserData("new1222", "new", null)).authToken());
+    }
+
+    @Test
+    public void observegametestn() {
+        var myf = new ServerFacade();
+        assertThrows(ResponseException.class, () -> myf.creategame("gg1", null));
+    }
+
+    @Test
+    public void joingametestp() throws ResponseException {
+        var myf = new ServerFacade();
+        auth = (myf.register(new UserData("new122", "new", "new"))).authToken();
+        myf.logout(auth);
+        assertDoesNotThrow(() -> myf.login(new UserData("new122", "new", null)).authToken());
+    }
+
+    @Test
+    public void joingametestn() {
+        var myf = new ServerFacade();
+        assertThrows(ResponseException.class, () -> myf.creategame("gg1", null));
+    }
 
 }

@@ -12,6 +12,14 @@ import java.util.Set;
  */
 public class TestFactory {
 
+    final static Map<Character, ChessPiece.PieceType> charToTypeMap = Map.of(
+            'p', ChessPiece.PieceType.PAWN,
+            'n', ChessPiece.PieceType.KNIGHT,
+            'r', ChessPiece.PieceType.ROOK,
+            'q', ChessPiece.PieceType.QUEEN,
+            'k', ChessPiece.PieceType.KING,
+            'b', ChessPiece.PieceType.BISHOP);
+
     // Chess Functions
     // ------------------------------------------------------------------------------------------------------------------
     public static ChessBoard getNewBoard() {
@@ -29,6 +37,7 @@ public class TestFactory {
     public static ChessPosition getNewPosition(int row, int col) {
         return new ChessPosition(row, col);
     }
+    // ------------------------------------------------------------------------------------------------------------------
 
     public static ChessMove getNewMove(ChessPosition startPosition, ChessPosition endPosition,
                                        ChessPiece.PieceType promotionPiece) {
@@ -49,7 +58,6 @@ public class TestFactory {
          */
         return 3000L;
     }
-    // ------------------------------------------------------------------------------------------------------------------
 
     static public ChessPosition startPosition(int row, int col) {
         return getNewPosition(row, col);
@@ -67,14 +75,6 @@ public class TestFactory {
 
         Assertions.assertEquals(validMoves, pieceMoves, "Wrong moves");
     }
-
-    final static Map<Character, ChessPiece.PieceType> charToTypeMap = Map.of(
-            'p', ChessPiece.PieceType.PAWN,
-            'n', ChessPiece.PieceType.KNIGHT,
-            'r', ChessPiece.PieceType.ROOK,
-            'q', ChessPiece.PieceType.QUEEN,
-            'k', ChessPiece.PieceType.KING,
-            'b', ChessPiece.PieceType.BISHOP);
 
     public static ChessBoard loadBoard(String boardText) {
         var board = getNewBoard();

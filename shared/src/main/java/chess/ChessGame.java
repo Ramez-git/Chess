@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 
-import static java.awt.geom.Path2D.contains;
-
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -14,6 +12,13 @@ import static java.awt.geom.Path2D.contains;
  * signature of the existing methods.
  */
 public class ChessGame {
+    private TeamColor turn;
+    private ChessBoard board;
+
+    public ChessGame() {
+
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -25,13 +30,6 @@ public class ChessGame {
     @Override
     public int hashCode() {
         return Objects.hash(turn, board);
-    }
-
-    private TeamColor turn;
-    private ChessBoard board;
-
-    public ChessGame() {
-
     }
 
     /**
@@ -50,18 +48,10 @@ public class ChessGame {
         turn = team;
     }
 
-    /**
-     * Enum identifying the 2 possible teams in a chess game
-     */
-    public enum TeamColor {
-        WHITE,
-        BLACK
-    }
-    public void switch_turn(){
-        if(turn == TeamColor.WHITE){
+    public void switch_turn() {
+        if (turn == TeamColor.WHITE) {
             turn = TeamColor.BLACK;
-        }
-        else{
+        } else {
             turn = TeamColor.WHITE;
 
         }
@@ -81,20 +71,20 @@ public class ChessGame {
         } else {
             ChessPiece Mypiece = board.getPiece(startPosition);
             TeamColor myColor = board.getPiece(startPosition).getTeamColor();
-            for(var move: Mypiece.pieceMoves(board,startPosition)){
+            for (var move : Mypiece.pieceMoves(board, startPosition)) {
                 ChessPosition mystart = move.getStartPosition();
                 ChessPosition myend = move.getEndPosition();
                 board.removePiece(mystart);
                 var possibleotherpiece = board.getPiece(myend);
                 board.removePiece(myend);
-                board.addPiece(myend,Mypiece);
-                if(!isInCheck(myColor)){
+                board.addPiece(myend, Mypiece);
+                if (!isInCheck(myColor)) {
                     result.add(move);
                 }
                 board.removePiece(myend);
-                board.addPiece(mystart,Mypiece);
-                if(possibleotherpiece !=null){
-                    board.addPiece(myend,possibleotherpiece);
+                board.addPiece(mystart, Mypiece);
+                if (possibleotherpiece != null) {
+                    board.addPiece(myend, possibleotherpiece);
                 }
             }
         }
@@ -108,23 +98,22 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        if(board.getPiece(move.getStartPosition()).getTeamColor()!=turn){
+        if (board.getPiece(move.getStartPosition()).getTeamColor() != turn) {
             throw new InvalidMoveException("not your turn");
         }
-        Collection<ChessMove> myvalidmoves=validMoves(move.getStartPosition());
-        if(myvalidmoves.contains(move)){
+        Collection<ChessMove> myvalidmoves = validMoves(move.getStartPosition());
+        if (myvalidmoves.contains(move)) {
             ChessPiece mypiece = board.getPiece(move.getStartPosition());
             board.removePiece(move.getStartPosition());
             board.removePiece(move.getEndPosition());
             switch_turn();
-            if(move.getPromotionPiece() == null){
-            board.addPiece(move.getEndPosition(),mypiece);}
-            else{
-                board.addPiece(move.getEndPosition(),new ChessPiece(mypiece.getTeamColor(),move.getPromotionPiece()));
+            if (move.getPromotionPiece() == null) {
+                board.addPiece(move.getEndPosition(), mypiece);
+            } else {
+                board.addPiece(move.getEndPosition(), new ChessPiece(mypiece.getTeamColor(), move.getPromotionPiece()));
 
             }
-        }
-        else{
+        } else {
             throw new InvalidMoveException("not a valid move");
         }
 
@@ -140,20 +129,20 @@ public class ChessGame {
         ChessPosition myKing = null;
         for (int row = 1; row <= 8; row++) {
             for (int column = 1; column <= 8; column++) {
-                ChessPosition mypos=new ChessPosition(row,column);
+                ChessPosition mypos = new ChessPosition(row, column);
                 ChessPiece Pieceinquestion = board.getPiece(mypos);
-                if (Pieceinquestion!= null && Pieceinquestion.getPieceType() == ChessPiece.PieceType.KING && Pieceinquestion.getTeamColor() == teamColor) {
+                if (Pieceinquestion != null && Pieceinquestion.getPieceType() == ChessPiece.PieceType.KING && Pieceinquestion.getTeamColor() == teamColor) {
                     myKing = mypos;
                 }
             }
         }
-        for (int row = 1; row <=8; row++) {
-            for (int column = 1; column <=8; column++) {
-                ChessPosition mypos=new ChessPosition(row,column);
+        for (int row = 1; row <= 8; row++) {
+            for (int column = 1; column <= 8; column++) {
+                ChessPosition mypos = new ChessPosition(row, column);
                 ChessPiece Pieceinquetion = board.getPiece(mypos);
-                if (Pieceinquetion!=null && Pieceinquetion.getTeamColor() != teamColor) {
-                    for(var moves:Pieceinquetion.pieceMoves(board,new ChessPosition(row,column))){
-                        if(moves.getEndPosition().equals(myKing)){
+                if (Pieceinquetion != null && Pieceinquetion.getTeamColor() != teamColor) {
+                    for (var moves : Pieceinquetion.pieceMoves(board, new ChessPosition(row, column))) {
+                        if (moves.getEndPosition().equals(myKing)) {
                             return true;
                         }
                     }
@@ -171,20 +160,20 @@ public class ChessGame {
      */
     public boolean isInCheckmate(TeamColor teamColor) {
 
-        if(isInCheck(teamColor)){
+        if (isInCheck(teamColor)) {
             ChessPiece myKing = null;
-            ChessPosition mypos1=null;
+            ChessPosition mypos1 = null;
             for (int row = 1; row <= 8; row++) {
                 for (int column = 1; column <= 8; column++) {
-                    ChessPosition mypos=new ChessPosition(row,column);
+                    ChessPosition mypos = new ChessPosition(row, column);
                     ChessPiece Pieceinquestion = board.getPiece(mypos);
-                    if (Pieceinquestion!= null && Pieceinquestion.getPieceType() == ChessPiece.PieceType.KING && Pieceinquestion.getTeamColor() == teamColor) {
+                    if (Pieceinquestion != null && Pieceinquestion.getPieceType() == ChessPiece.PieceType.KING && Pieceinquestion.getTeamColor() == teamColor) {
                         myKing = board.getPiece(mypos);
-                        mypos1=mypos;
+                        mypos1 = mypos;
                     }
                 }
             }
-            for(var move:myKing.pieceMoves(board,mypos1)) {
+            for (var move : myKing.pieceMoves(board, mypos1)) {
                 ChessPosition mystart = move.getStartPosition();
                 ChessPosition myend = move.getEndPosition();
                 board.removePiece(mystart);
@@ -213,18 +202,27 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        for(int row=1;row<=8; row++){
-            for(int column =1;column<=8;column++){
-                var piece_in_question = board.getPiece(new ChessPosition(row,column));
-                if(piece_in_question !=null && piece_in_question.getTeamColor() == teamColor){
-                    var my_valid_moves=validMoves(new ChessPosition(row,column));
-                    if(my_valid_moves.isEmpty()){
+        for (int row = 1; row <= 8; row++) {
+            for (int column = 1; column <= 8; column++) {
+                var piece_in_question = board.getPiece(new ChessPosition(row, column));
+                if (piece_in_question != null && piece_in_question.getTeamColor() == teamColor) {
+                    var my_valid_moves = validMoves(new ChessPosition(row, column));
+                    if (my_valid_moves.isEmpty()) {
                         return true;
                     }
                 }
             }
         }
         return false;
+    }
+
+    /**
+     * Gets the current chessboard
+     *
+     * @return the chessboard
+     */
+    public ChessBoard getBoard() {
+        return this.board;
     }
 
     /**
@@ -238,11 +236,10 @@ public class ChessGame {
     }
 
     /**
-     * Gets the current chessboard
-     *
-     * @return the chessboard
+     * Enum identifying the 2 possible teams in a chess game
      */
-    public ChessBoard getBoard() {
-        return this.board;
+    public enum TeamColor {
+        WHITE,
+        BLACK
     }
 }

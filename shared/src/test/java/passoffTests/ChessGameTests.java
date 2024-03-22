@@ -1,7 +1,10 @@
 package passoffTests.chessTests;
 
 import chess.*;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
@@ -627,6 +630,11 @@ public class ChessGameTests {
                 "Black is in checkmate but isInCheckmate returned false");
     }
 
+    private void assertMoves(ChessGame game, Set<ChessMove> validMoves, ChessPosition position) {
+        var actualMoves = new HashSet<>(game.validMoves(position));
+        Assertions.assertEquals(validMoves, actualMoves,
+                "ChessGame validMoves did not return the correct moves");
+    }
 
     @Nested
     @DisplayName("Valid Move Tests")
@@ -770,13 +778,6 @@ public class ChessGameTests {
             });
             assertMoves(game, validMoves, position);
         }
-    }
-
-
-    private void assertMoves(ChessGame game, Set<ChessMove> validMoves, ChessPosition position) {
-        var actualMoves = new HashSet<>(game.validMoves(position));
-        Assertions.assertEquals(validMoves, actualMoves,
-                "ChessGame validMoves did not return the correct moves");
     }
 }
 

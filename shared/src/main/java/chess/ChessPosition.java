@@ -9,6 +9,14 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessPosition {
+    private int row;
+    private int column;
+
+    public ChessPosition(int row, int col) {
+        this.row = row;
+        this.column = col;
+    }
+
     @Override
     public String toString() {
         return "ChessPosition{" +
@@ -30,19 +38,12 @@ public class ChessPosition {
         return Objects.hash(row, column);
     }
 
-    private int row;
-private int column;
-    public ChessPosition(int row, int col) {
-    this.row=row;
-    this.column=col;
-    }
-
     /**
      * @return which row this position is in
      * 1 codes for the bottom row
      */
     public int getRow() {
-        return row-1;
+        return row - 1;
     }
 
     /**
@@ -50,6 +51,6 @@ private int column;
      * 1 codes for the left row
      */
     public int getColumn() {
-        return column-1;
+        return column - 1;
     }
 }

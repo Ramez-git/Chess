@@ -20,7 +20,7 @@ public class MemoryDataAccessGame implements DataAccessgame {
     }
 
     public Integer createGame(String Gamename) throws DataAccessException {
-        if(Gamename==null){
+        if (Gamename == null) {
             throw new DataAccessException("name not provided");
         }
         games.put(id, new GameData(id, null, null, Gamename, new ChessGame()));

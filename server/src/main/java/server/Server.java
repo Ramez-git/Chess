@@ -15,7 +15,6 @@ import spark.Spark;
 
 import java.lang.module.ResolutionException;
 import java.sql.SQLException;
-import java.util.Locale;
 import java.util.Objects;
 
 public class Server {
@@ -24,7 +23,7 @@ public class Server {
     private final AuthService authService;
 
 
-    public Server(){
+    public Server() {
         try {
             final DataAccessAuth authdata = new mySqlAuth();
             this.authService = new AuthService(authdata);
@@ -268,6 +267,15 @@ public class Server {
         }
     }
 
+    public static class message {
+        @SerializedName("message")
+        private String message;
+
+        public message(String message) {
+            this.message = message;
+        }
+    }
+
     //end functions for endpoints
     public class gamename {
         @SerializedName("gameName")
@@ -275,15 +283,6 @@ public class Server {
 
         public String getGameName() {
             return gameName;
-        }
-    }
-
-    public static class message {
-        @SerializedName("message")
-        private String message;
-
-        public message(String message) {
-            this.message = message;
         }
     }
 

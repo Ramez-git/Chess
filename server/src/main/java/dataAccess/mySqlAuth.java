@@ -36,7 +36,7 @@ public class mySqlAuth implements DataAccessAuth {
 
     @Override
     public AuthData createAuth(UserData user) throws DataAccessException, SQLException {
-        if(user.username() == null){
+        if (user.username() == null) {
             throw new DataAccessException("Error: description");
         }
         var authsdata1 = new AuthData(UUID.randomUUID().toString(), user.username());
@@ -57,7 +57,7 @@ public class mySqlAuth implements DataAccessAuth {
 
     @Override
     public AuthData getusr(AuthData authtok) throws DataAccessException, SQLException {
-        if(authtok == null ){
+        if (authtok == null) {
             throw new DataAccessException("Error: description");
         }
         var statement = "SELECT username, authToken FROM auths WHERE authToken=?";
@@ -67,14 +67,12 @@ public class mySqlAuth implements DataAccessAuth {
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
                         return readauth(rs);
-                    }
-                    else{
+                    } else {
                         throw new SQLException("usr does not exist");
                     }
                 }
             }
-        }
-        catch (SQLException e){
+        } catch (SQLException e) {
             throw new DataAccessException("usr does not exist");
         }
 
@@ -107,12 +105,11 @@ public class mySqlAuth implements DataAccessAuth {
                 ps.executeQuery();
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        var myusr= readauth(rs);
-                        if (myusr == null){
+                        var myusr = readauth(rs);
+                        if (myusr == null) {
                             throw new DataAccessException("Error: unauthorized");
                         }
-                    }
-                    else{
+                    } else {
                         throw new DataAccessException("Error: unauthorized");
                     }
                 }
@@ -124,8 +121,7 @@ public class mySqlAuth implements DataAccessAuth {
                 ps.setString(1, auth.authToken());
                 ps.executeUpdate();
             }
-        }
-        catch (SQLException e){
+        } catch (SQLException e) {
             throw new DataAccessException("Error: unauthorized");
         }
     }
