@@ -1,6 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
+import com.google.protobuf.StringValue;
 import exception.ResponseException;
 import model.AuthData;
 import model.UserData;
@@ -16,8 +17,8 @@ import java.net.URL;
 public class ServerFacade {
     private final String serverUrl;
 
-    public ServerFacade() {
-        this.serverUrl = "http://localhost:8080/";
+    public ServerFacade(int port) {
+        this.serverUrl = "http://localhost:"+ String.valueOf(port) +"/";
     }
 
     private static void writeBody(Object request, HttpURLConnection http) throws IOException {

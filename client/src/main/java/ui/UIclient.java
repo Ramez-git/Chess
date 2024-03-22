@@ -87,7 +87,7 @@ public class UIclient {
     }
 
     public void run() throws ResponseException {
-        var myserverf = new ServerFacade();
+        var myserverf = new ServerFacade(8080);
         while (!quit) {
             if (logged_in) {
                 System.out.print("[LOGGED_IN] >>> ");
