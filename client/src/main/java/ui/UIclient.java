@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import exception.ResponseException;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import server.ServerFacade;
 
@@ -18,6 +19,9 @@ public class UIclient {
     boolean quit = false;
     private AuthData auth;
     private Scanner input;
+    private String WHITE;
+    private String BLACK;
+    private String game;
 
     public UIclient() {
         System.out.println(BLACK_QUEEN + " Welcome to 240 chess. Type Help to get started. " + BLACK_QUEEN);
@@ -25,37 +29,7 @@ public class UIclient {
 
     }
 
-    public static void printChessboard1() {
-        char[][] letters = {
-                {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'},
-                {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
-                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
-                {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'}
-        };
-
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                if ((i + j) % 2 == 0) {
-                    System.out.print("\u001B[47m"); // White background
-                } else {
-                    System.out.print("\u001B[40m"); // Black background
-                }
-                if (i <= 5) {
-                    System.out.print(SET_TEXT_COLOR_BLUE + letters[i][j] + " ");
-                } else {
-                    System.out.print(SET_TEXT_COLOR_RED + letters[i][j] + " ");
-                }
-
-            }
-            System.out.println("\u001B[0m"); // Reset colors and move to the next row
-        }
-    }
-
-    public static void printChessboard2() {
+    public static void printChessboardWhite() {
         char[][] letters = {
                 {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'e'},
                 {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
@@ -66,8 +40,9 @@ public class UIclient {
                 {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
                 {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}
         };
-
+        System.out.println(" a b c d e f g h");
         for (int i = 0; i < 8; i++) {
+            System.out.print(i + 1);
             for (int j = 0; j < 8; j++) {
                 if ((i + j) % 2 == 0) {
                     System.out.print("\u001B[47m"); // White background
@@ -75,7 +50,6 @@ public class UIclient {
                     System.out.print("\u001B[40m"); // Black background
                 }
                 if (i <= 5) {
-
                     System.out.print(SET_TEXT_COLOR_RED + letters[i][j] + " ");
                 } else {
                     System.out.print(SET_TEXT_COLOR_BLUE + letters[i][j] + " ");
@@ -84,6 +58,42 @@ public class UIclient {
             }
             System.out.println("\u001B[0m"); // Reset colors and move to the next row
         }
+        System.out.println(" a b c d e f g h");
+    }
+
+    public static void printChessboardBlack() {
+        char[][] letters = {
+                {'R', 'N', 'B', 'K', 'Q', 'B', 'N', 'R'},
+                {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
+                {'r', 'n', 'b', 'k', 'q', 'b', 'n', 'r'}
+        };
+
+        System.out.println(" h g f e d c b a");
+        for (int i = 0; i < 8; i++) {
+            System.out.print(8 - i);
+            for (int j = 0; j < 8; j++) {
+                if ((i + j) % 2 == 0) {
+                    System.out.print("\u001B[47m"); // White background
+                } else {
+                    System.out.print("\u001B[40m"); // Black background
+                }
+                if (i <= 5) {
+
+                    System.out.print(SET_TEXT_COLOR_BLUE + letters[i][j] + " ");
+                } else {
+                    System.out.print(SET_TEXT_COLOR_RED + letters[i][j] + " ");
+                }
+
+            }
+            System.out.println("\u001B[0m"); // Reset colors and move to the next row
+
+        }
+        System.out.println(" h g f e d c b a");
     }
 
     public void run() throws ResponseException {
@@ -111,34 +121,102 @@ public class UIclient {
                             + SET_TEXT_COLOR_WHITE + " - with possible commands\n");
                 } else if (Objects.equals(cmd, "create")) {
                     if (params.length == 1) {
-                        System.out.println(myserverf.creategame(new gamename1(params[0]), auth.authToken()));
-                        printChessboard1();
-                        System.out.println("            ");
-                        printChessboard2();
+                        try {
+                            System.out.println(myserverf.creategame(new gamename1(params[0]), auth.authToken()));
+                        } catch (ResponseException e) {
+                            System.out.println("err");
+                        }
                     } else {
-                        throw new RuntimeException("not enough params create game");
+                        System.out.println("err");
                     }
                 } else if (Objects.equals(cmd, "list")) {
-                    var f = myserverf.listgames(auth.authToken());
-                    System.out.println(f);
+                    try {
+                        var f = myserverf.listgames(auth.authToken());
+                        //System.out.println(f.get());
+                        System.out.println(f);
+                    } catch (ResponseException e) {
+                        System.out.println("err");
+                    }
                 } else if (Objects.equals(cmd, "join")) {
                     if (params.length == 2) {
-                        myserverf.joingame(auth.authToken(), new wrapper(params[1], params[0]));
-                        System.out.println("success");
+                        try {
+                            if ((Objects.equals(auth.authToken(), WHITE) || Objects.equals(auth.authToken(), BLACK)) && Objects.equals(game, params[0])) {
+                                if (Objects.equals(params[1], "white")) {
+//                                    System.out.println(" a b c d e f g h");
+                                    printChessboardWhite();
+//                                    System.out.println(" a b c d e f g h");
+
+
+//                                    System.out.println(" h g f e d c b a");
+                                    printChessboardBlack();
+//                                    System.out.println(" h g f e d c b a");
+
+                                } else {
+//                                    System.out.println(" a b c d e f g h");
+                                    printChessboardBlack();
+//                                    System.out.println(" a b c d e f g h");
+//                                    System.out.println(" h g f e d c b a");
+                                    printChessboardWhite();
+//                                    System.out.println(" h g f e d c b a");
+                                }
+                            } else {
+                                myserverf.joingame(auth.authToken(), new wrapper(params[1], params[0]));
+                                System.out.println("success");
+                                if (Objects.equals(params[1], "white")) {
+//                                    System.out.println(" a b c d e f g h");
+                                    printChessboardWhite();
+//                                    System.out.println(" a b c d e f g h");
+//                                    System.out.println(" h g f e d c b a");
+                                    printChessboardBlack();
+//                                    System.out.println(" h g f e d c b a");
+                                    WHITE = auth.authToken();
+                                    game = params[0];
+                                } else {
+//                                    System.out.println(" h g f e d c b a");
+
+                                    printChessboardBlack();
+//                                    System.out.println(" h g f e d c b a");
+//                                    System.out.println(" a b c d e f g h");
+                                    printChessboardWhite();
+//                                    System.out.println(" a b c d e f g h");
+                                    BLACK = auth.authToken();
+                                    game = params[0];
+                                }
+
+                                game = params[0];
+                            }
+                        } catch (ResponseException e) {
+                            System.out.println("err");
+                        }
                     } else {
-                        throw new RuntimeException("not enough params create game");
+                        System.out.println("err");
                     }
                 } else if (Objects.equals(cmd, "observe")) {
                     if (params.length == 1) {
-                        myserverf.observer(auth.authToken(), new wrapper("empty", params[0]));
+//                        try{
+//                        myserverf.observer(auth.authToken(), new wrapper("", params[0]));
+//                        System.out.println("success");}
+//                        catch (ResponseException e){
+//                            System.out.println("err");
+//                        }
+//                        System.out.println(" h g f e d c b a");
+                        printChessboardWhite();
+//                        System.out.println(" a b c d e f g h");
+//                        System.out.println(" a b c d e f g h");
+                        printChessboardBlack();
+//                        System.out.println(" h g f e d c b a");
                         System.out.println("success");
                     } else {
-                        throw new RuntimeException("not enough params create game");
+                        System.out.println("err");
                     }
                 } else if (Objects.equals(cmd, "logout")) {
-                    myserverf.logout(auth.authToken());
-                    System.out.println("success");
-                    logged_in = false;
+                    try {
+                        myserverf.logout(auth.authToken());
+                        System.out.println("success");
+                        logged_in = false;
+                    } catch (ResponseException e) {
+                        System.out.println("err");
+                    }
                 } else if (Objects.equals(cmd, "quit")) {
                     break;
                 }
@@ -160,21 +238,29 @@ public class UIclient {
                     break;
                 } else if (Objects.equals(cmd, "register")) {
                     if (params.length == 3) {
-                        var str = myserverf.register(new UserData(params[0], params[1], params[2]));
-                        auth = new Gson().fromJson(String.valueOf(str), AuthData.class);
-                        System.out.println("Success");
-                        logged_in = true;
+                        try {
+                            var str = myserverf.register(new UserData(params[0], params[1], params[2]));
+                            auth = new Gson().fromJson(String.valueOf(str), AuthData.class);
+                            System.out.println("Success");
+                            logged_in = true;
+                        } catch (ResponseException e) {
+                            System.out.println("err");
+                        }
                     } else {
                         throw new RuntimeException("not enough params register user");
                     }
                 } else if (Objects.equals(cmd, "login")) {
                     if (params.length == 2) {
-                        var str = myserverf.login(new UserData(params[0], params[1], null));
-                        auth = new Gson().fromJson(String.valueOf(str), AuthData.class);
-                        System.out.println("Success");
-                        logged_in = true;
+                        try {
+                            var str = myserverf.login(new UserData(params[0], params[1], null));
+                            auth = new Gson().fromJson(String.valueOf(str), AuthData.class);
+                            System.out.println("Success");
+                            logged_in = true;
+                        } catch (ResponseException e) {
+                            System.out.println("err");
+                        }
                     } else {
-                        throw new RuntimeException("not enough params login user");
+                        System.out.println("err");
                     }
 
                 }
@@ -205,6 +291,31 @@ public class UIclient {
         public wrapper(String playerColor, String gameID) {
             this.playerColor = playerColor;
             this.gameID = gameID;
+        }
+    }
+
+    //    public class gamewrapper{
+//        @SerializedName("gameID")
+//        private String gameID;
+//        @SerializedName("whiteUsername")
+//        private String whiteUsername;
+//        @SerializedName("blackUsername")
+//        private String blackUsername;
+//        @SerializedName("gameName")
+//        private String gameName;
+//
+//
+//    }
+    public class GamesWrapper {
+        @SerializedName("games")
+        private GameData[] games;
+
+        public GamesWrapper(GameData[] games) {
+            this.games = games;
+        }
+
+        public GameData[] getGames() {
+            return games;
         }
     }
 
