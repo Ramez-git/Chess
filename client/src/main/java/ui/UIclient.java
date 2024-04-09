@@ -45,9 +45,9 @@ public class UIclient {
             System.out.print(i + 1);
             for (int j = 0; j < 8; j++) {
                 if ((i + j) % 2 == 0) {
-                    System.out.print("\u001B[47m"); // White background
+                    System.out.print("\u001B[47m");
                 } else {
-                    System.out.print("\u001B[40m"); // Black background
+                    System.out.print("\u001B[40m");
                 }
                 if (i <= 5) {
                     System.out.print(SET_TEXT_COLOR_RED + letters[i][j] + " ");
@@ -56,7 +56,7 @@ public class UIclient {
                 }
 
             }
-            System.out.println("\u001B[0m"); // Reset colors and move to the next row
+            System.out.println("\u001B[0m");
         }
         System.out.println(" a b c d e f g h");
     }
@@ -78,9 +78,9 @@ public class UIclient {
             System.out.print(8 - i);
             for (int j = 0; j < 8; j++) {
                 if ((i + j) % 2 == 0) {
-                    System.out.print("\u001B[47m"); // White background
+                    System.out.print("\u001B[47m");
                 } else {
-                    System.out.print("\u001B[40m"); // Black background
+                    System.out.print("\u001B[40m");
                 }
                 if (i <= 5) {
 
@@ -90,12 +90,10 @@ public class UIclient {
                 }
 
             }
-            System.out.println("\u001B[0m"); // Reset colors and move to the next row
-
+            System.out.println("\u001B[0m");
         }
         System.out.println(" h g f e d c b a");
     }
-
     public void run() throws ResponseException {
         var myserverf = new ServerFacade(8080);
         while (!quit) {
@@ -142,47 +140,27 @@ public class UIclient {
                         try {
                             if ((Objects.equals(auth.authToken(), WHITE) || Objects.equals(auth.authToken(), BLACK)) && Objects.equals(game, params[0])) {
                                 if (Objects.equals(params[1], "white")) {
-//                                    System.out.println(" a b c d e f g h");
                                     printChessboardWhite();
-//                                    System.out.println(" a b c d e f g h");
-
-
-//                                    System.out.println(" h g f e d c b a");
                                     printChessboardBlack();
-//                                    System.out.println(" h g f e d c b a");
 
                                 } else {
-//                                    System.out.println(" a b c d e f g h");
                                     printChessboardBlack();
-//                                    System.out.println(" a b c d e f g h");
-//                                    System.out.println(" h g f e d c b a");
                                     printChessboardWhite();
-//                                    System.out.println(" h g f e d c b a");
                                 }
                             } else {
                                 myserverf.joingame(auth.authToken(), new wrapper(params[1], params[0]));
                                 System.out.println("success");
                                 if (Objects.equals(params[1], "white")) {
-//                                    System.out.println(" a b c d e f g h");
                                     printChessboardWhite();
-//                                    System.out.println(" a b c d e f g h");
-//                                    System.out.println(" h g f e d c b a");
                                     printChessboardBlack();
-//                                    System.out.println(" h g f e d c b a");
                                     WHITE = auth.authToken();
                                     game = params[0];
                                 } else {
-//                                    System.out.println(" h g f e d c b a");
-
                                     printChessboardBlack();
-//                                    System.out.println(" h g f e d c b a");
-//                                    System.out.println(" a b c d e f g h");
                                     printChessboardWhite();
-//                                    System.out.println(" a b c d e f g h");
                                     BLACK = auth.authToken();
                                     game = params[0];
                                 }
-
                                 game = params[0];
                             }
                         } catch (ResponseException e) {
@@ -199,12 +177,8 @@ public class UIclient {
 //                        catch (ResponseException e){
 //                            System.out.println("err");
 //                        }
-//                        System.out.println(" h g f e d c b a");
                         printChessboardWhite();
-//                        System.out.println(" a b c d e f g h");
-//                        System.out.println(" a b c d e f g h");
                         printChessboardBlack();
-//                        System.out.println(" h g f e d c b a");
                         System.out.println("success");
                     } else {
                         System.out.println("err");
@@ -293,19 +267,6 @@ public class UIclient {
             this.gameID = gameID;
         }
     }
-
-    //    public class gamewrapper{
-//        @SerializedName("gameID")
-//        private String gameID;
-//        @SerializedName("whiteUsername")
-//        private String whiteUsername;
-//        @SerializedName("blackUsername")
-//        private String blackUsername;
-//        @SerializedName("gameName")
-//        private String gameName;
-//
-//
-//    }
     public class GamesWrapper {
         @SerializedName("games")
         private GameData[] games;
