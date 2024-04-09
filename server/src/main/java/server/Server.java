@@ -1,5 +1,6 @@
 package server;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import dataAccess.*;
@@ -310,5 +311,8 @@ public class Server {
         public Integer getGameID() {
             return gameID;
         }
+    }
+    public ChessGame getgame(int g) throws DataAccessException {
+        return gameService.getGame(g);
     }
 }

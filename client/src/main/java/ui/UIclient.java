@@ -2,11 +2,16 @@ package ui;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
+import dataAccess.*;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
+import server.Server;
 import server.ServerFacade;
+import service.AuthService;
+import service.GameService;
+import service.UserService;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -22,8 +27,10 @@ public class UIclient {
     private String WHITE;
     private String BLACK;
     private String game;
+    private Server server;
 
-    public UIclient() {
+    public UIclient() throws DataAccessException {
+        this.server = new Server();
         System.out.println(BLACK_QUEEN + " Welcome to 240 chess. Type Help to get started. " + BLACK_QUEEN);
         input = new Scanner(System.in);
 
@@ -169,17 +176,24 @@ public class UIclient {
                     } else {
                         System.out.println("err");
                     }
-                } else if (Objects.equals(cmd, "observe")) {
+                }
+
+
+
+                else if (Objects.equals(cmd, "observe")) {
                     if (params.length == 1) {
-//                        try{
-//                        myserverf.observer(auth.authToken(), new wrapper("", params[0]));
-//                        System.out.println("success");}
-//                        catch (ResponseException e){
-//                            System.out.println("err");
-//                        }
-                        printChessboardWhite();
-                        printChessboardBlack();
+                        try{
+                        myserverf.observer(auth.authToken(), new wrapper("", params[0]));
+                            printChessboardWhite();
+                            printChessboardBlack();
                         System.out.println("success");
+                        System.out.println(server.getgame());
+                        }
+                        catch (ResponseException e){
+                            System.out.println("err");
+                        } catch (DataAccessException e) {
+                            System.out.println("getgame err");
+                        }
                     } else {
                         System.out.println("err");
                     }
