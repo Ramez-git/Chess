@@ -1,5 +1,7 @@
 package ui;
 
+import chess.ChessGame;
+import chess.ChessPosition;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import dataAccess.*;
@@ -7,6 +9,7 @@ import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
+import model.wrapper;
 import server.Server;
 import server.ServerFacade;
 import service.AuthService;
@@ -14,6 +17,7 @@ import service.GameService;
 import service.UserService;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -28,6 +32,7 @@ public class UIclient {
     private String BLACK;
     private String game;
     private Server server;
+    private GameData mygames;
 
     public UIclient() throws DataAccessException {
         this.server = new Server();
@@ -136,7 +141,7 @@ public class UIclient {
                     }
                 } else if (Objects.equals(cmd, "list")) {
                     try {
-                        var f = myserverf.listgames(auth.authToken());
+                        var f = myserverf.listgames1(auth.authToken());
                         //System.out.println(f.get());
                         System.out.println(f);
                     } catch (ResponseException e) {
@@ -145,16 +150,6 @@ public class UIclient {
                 } else if (Objects.equals(cmd, "join")) {
                     if (params.length == 2) {
                         try {
-                            if ((Objects.equals(auth.authToken(), WHITE) || Objects.equals(auth.authToken(), BLACK)) && Objects.equals(game, params[0])) {
-                                if (Objects.equals(params[1], "white")) {
-                                    printChessboardWhite();
-                                    printChessboardBlack();
-
-                                } else {
-                                    printChessboardBlack();
-                                    printChessboardWhite();
-                                }
-                            } else {
                                 myserverf.joingame(auth.authToken(), new wrapper(params[1], params[0]));
                                 System.out.println("success");
                                 if (Objects.equals(params[1], "white")) {
@@ -169,7 +164,7 @@ public class UIclient {
                                     game = params[0];
                                 }
                                 game = params[0];
-                            }
+
                         } catch (ResponseException e) {
                             System.out.println("err");
                         }
@@ -183,17 +178,18 @@ public class UIclient {
                 else if (Objects.equals(cmd, "observe")) {
                     if (params.length == 1) {
                         try{
-                        myserverf.observer(auth.authToken(), new wrapper("", params[0]));
+                            var x = myserverf.observer(auth.authToken(), new wrapper("", params[0]));
+                            System.out.println("\n");
+                            var y = (GameData) x;
+//                            System.out.print(y.game().getBoard().getPiece(new ChessPosition(0,0)).getPieceType());
+//                            System.out.println();
                             printChessboardWhite();
                             printChessboardBlack();
-                        System.out.println("success");
-                        System.out.println(server.getgame());
+                            System.out.println("success");
+//                        System.out.println(mygames.);
                         }
                         catch (ResponseException e){
-                            System.out.println("err");
-                        } catch (DataAccessException e) {
-                            System.out.println("getgame err");
-                        }
+                            System.out.println("err");}
                     } else {
                         System.out.println("err");
                     }
@@ -267,30 +263,6 @@ public class UIclient {
 
         public String getGameName() {
             return gameName;
-        }
-    }
-
-    public class wrapper {
-        @SerializedName("playerColor")
-        private String playerColor;
-        @SerializedName("gameID")
-        private String gameID;
-
-        public wrapper(String playerColor, String gameID) {
-            this.playerColor = playerColor;
-            this.gameID = gameID;
-        }
-    }
-    public class GamesWrapper {
-        @SerializedName("games")
-        private GameData[] games;
-
-        public GamesWrapper(GameData[] games) {
-            this.games = games;
-        }
-
-        public GameData[] getGames() {
-            return games;
         }
     }
 

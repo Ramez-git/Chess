@@ -8,7 +8,7 @@ import service.AuthService;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Objects;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
@@ -159,8 +159,8 @@ public class mysqlGame implements DataAccessgame {
     }
 
     @Override
-    public GameData[] listGames() throws DataAccessException, SQLException {
-        List<GameData> result = new ArrayList<>();
+    public Collection<GameData> listGames() throws DataAccessException, SQLException {
+        var result = new ArrayList<GameData>();
         var statement = "SELECT id,whiteUsername,blackUsername,gameName,json FROM games";
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement)) {
@@ -171,8 +171,8 @@ public class mysqlGame implements DataAccessgame {
                 }
             }
         }
-        GameData[] resultt = result.toArray(new GameData[0]);
-        return resultt;
+//        GameData[] resultt = result.toArray(new GameData[0]);
+        return result;
     }
 
     @Override

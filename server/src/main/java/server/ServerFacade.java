@@ -1,10 +1,13 @@
 package server;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 import com.google.protobuf.StringValue;
 import exception.ResponseException;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
+import model.wrapper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,6 +16,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.util.Arrays;
 
 public class ServerFacade {
     private final String serverUrl;
@@ -57,17 +61,39 @@ public class ServerFacade {
         return "success";
     }
 
-    public Object listgames(String auth) throws ResponseException {
-        return this.makeRequestwithoutbody("GET", "/game", Object.class, auth);
+    public GameData[] listgames(String auth) throws ResponseException {
+        record res(GameData[] games){}
+        var res= this.makeRequestwithoutbody("GET", "/game", res.class, auth);
+        if (res!=null){
+            var r = res.games;
+            return r;
+        }
+        else{
+            return new GameData[0];
+        }
+    }
+    public String listgames1(String auth) throws ResponseException {
+        var x = listgames(auth);
+        return Arrays.toString(x);
     }
 
     public Object joingame(String auth, Object color) throws ResponseException {
         return this.makeRequestwithauthandbody("PUT", "/game", color, Object.class, auth);
     }
-
     public Object observer(String auth, Object ID) throws ResponseException {
-        this.makeRequestwithauthandbody("PUT", "/game", ID, Object.class, auth);
-        return "success";
+        this.makeRequestwithauthandbody("PUT", "/game", ID, null, auth);
+        var y = (wrapper) ID;
+        var x= Integer.parseInt(y.getGameID());
+        return getgame(auth,x);
+    }
+    public GameData getgame(String auth, int ID) throws ResponseException {
+        var mygames=listgames(auth);
+        for(var mygame:mygames){
+            if(mygame.gameID() == ID){
+                return mygame;
+            }
+        }
+        return null;
     }
 
     public void logout(String auth) throws ResponseException {
@@ -99,10 +125,20 @@ public class ServerFacade {
             http.addRequestProperty("Authorization", auth);
             http.connect();
             throwIfNotSuccessful(http);
-            return readBody(http, responseClass);
+            try (InputStream respBody = http.getInputStream()) {
+                InputStreamReader reader = new InputStreamReader(respBody);
+                if (http.getResponseCode() == 200) {
+                    if (responseClass != null) {
+                        var serializer = new Gson();
+                        var r= serializer.fromJson(reader, responseClass);
+                        return r;
+                    }
+                    return null;
+                }}
         } catch (Exception ex) {
             throw new ResponseException(500, ex.getMessage());
         }
+        return null;
     }
 
     private <T> T makeRequestwithauthandbody(String method, String path, Object request, Class<T> responseClass, String auth) throws ResponseException {
@@ -136,3 +172,4 @@ public class ServerFacade {
         return status / 100 == 2;
     }
 }
+

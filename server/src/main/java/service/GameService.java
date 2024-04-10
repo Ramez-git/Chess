@@ -6,6 +6,7 @@ import dataAccess.DataAccessgame;
 import model.GameData;
 
 import java.sql.SQLException;
+import java.util.Collection;
 
 public class GameService implements DataAccessgame {
     private final DataAccessgame data;
@@ -14,7 +15,7 @@ public class GameService implements DataAccessgame {
         this.data = data;
     }
 
-    public GameData[] listGames() throws DataAccessException, SQLException {
+    public Collection<GameData> listGames() throws DataAccessException, SQLException {
         return data.listGames();
     }
 

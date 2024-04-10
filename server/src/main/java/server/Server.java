@@ -16,6 +16,8 @@ import spark.Spark;
 
 import java.lang.module.ResolutionException;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class Server {
@@ -146,7 +148,13 @@ public class Server {
             throw new RuntimeException(e);
         }
     }
-
+    private String Flush(Object... objs) {
+        Map<Object, Object> mymap = new HashMap<>();
+        for (var x = 0; x < objs.length-1; x += 2) {
+            mymap.put(objs[x], objs[x + 1]);
+        }
+        return new Gson().toJson(mymap);
+    }
     public Object listGames(Request req, Response res) throws ResolutionException, DataAccessException {
         var authstr = req.headers("Authorization");
         var authService1 = authService;
@@ -155,7 +163,9 @@ public class Server {
         try {
             authService1.getusr(myauth);
             res.status(200);
-            return new Gson().toJson(new GamesWrapper(gameService1.listGames()));
+            Map<Object,Object> m = new HashMap<>();
+            var games = gameService1.listGames().toArray();
+            return Flush("games", games);
         } catch (DataAccessException e) {
             if (Objects.equals(e.getMessage(), "usr does not exist")) {
                 res.status(401);

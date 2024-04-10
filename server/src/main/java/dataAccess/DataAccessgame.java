@@ -4,6 +4,7 @@ import chess.ChessGame;
 import model.GameData;
 
 import java.sql.SQLException;
+import java.util.Collection;
 
 public interface DataAccessgame {
     ChessGame getGame(Integer ID) throws DataAccessException;
@@ -12,7 +13,7 @@ public interface DataAccessgame {
 
     Integer createGame(String Gamename) throws DataAccessException, SQLException;
 
-    GameData[] listGames() throws DataAccessException, SQLException;
+    Collection<GameData> listGames() throws DataAccessException, SQLException;
 
     void deleteAll() throws DataAccessException, SQLException;
 }

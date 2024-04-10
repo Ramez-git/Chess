@@ -3,6 +3,7 @@ package dataAccess;
 import chess.ChessGame;
 import model.GameData;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -77,9 +78,8 @@ public class MemoryDataAccessGame implements DataAccessgame {
     }
 
     @Override
-    public GameData[] listGames() throws DataAccessException {
-        GameData[] data = (games.values().toArray(new GameData[0]));
-        return data;
+    public Collection<GameData> listGames() throws DataAccessException {
+        return games.values();
     }
 
     @Override
