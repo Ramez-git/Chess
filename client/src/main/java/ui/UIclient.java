@@ -1,6 +1,6 @@
 package ui;
 
-import chess.ChessGame;
+import chess.*;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import dataAccess.*;
@@ -27,7 +27,7 @@ public class UIclient {
     private String BLACK;
     private String game;
     private Server server;
-    private GameData mygames;
+    private ChessGame mygame;
 
     public UIclient() throws DataAccessException {
         this.server = new Server();
@@ -78,19 +78,25 @@ public class UIclient {
                     } catch (ResponseException e) {
                         System.out.println("err");
                     }
-                } else if (Objects.equals(cmd, "join")) {
+
+                }
+                else if (Objects.equals(cmd, "redraw")){
+                    System.out.println(mygame.getBoard().toString1(ChessGame.TeamColor.WHITE,null));
+                    System.out.println(mygame.getBoard().toString1(ChessGame.TeamColor.BLACK,null));
+                }
+                else if (Objects.equals(cmd, "join")) {
                     if (params.length == 2) {
                         try {
                                 var x = myserverf.joingame(auth.authToken(), new wrapper(params[1], params[0]));
                                 System.out.println("success");
                                 if (Objects.equals(params[1], "white")) {
-                                    var myboard = new Gson().fromJson(x.toString(), GameData.class).game().getBoard();
-                                    System.out.println(myboard.toString1(ChessGame.TeamColor.WHITE,null));
+                                    mygame = new Gson().fromJson(x.toString(), GameData.class).game();
+                                    System.out.println(mygame.getBoard().toString1(ChessGame.TeamColor.WHITE,null));
                                     WHITE = auth.authToken();
                                     game = params[0];
                                 } else {
-                                    var myboard = new Gson().fromJson(x.toString(), GameData.class).game().getBoard();
-                                    System.out.println(myboard.toString1(ChessGame.TeamColor.BLACK,null));
+                                    var mygame = new Gson().fromJson(x.toString(), GameData.class).game().getBoard();
+                                    System.out.println(mygame.toString1(ChessGame.TeamColor.BLACK,null));
                                     BLACK = auth.authToken();
                                     game = params[0];
                                 }
@@ -103,15 +109,54 @@ public class UIclient {
                         System.out.println("err");
                     }
                 }
+                else if (Objects.equals(cmd, "leave")) {
+                    mygame = null;
+                    WHITE = null;
+                    BLACK = null;
+                    System.out.println("success");
+                }
+                else if (Objects.equals(cmd, "move")) {
+                    if(params.length == 2) {
+                        try{
+                            String[] parts = params[0].split(",");
+                            int row1 = Integer.parseInt(parts[0]);
+                            int column1 = Integer.parseInt(parts[1]);
+                            parts = params[1].split(",");
+                            int row2 = Integer.parseInt(parts[0]);
+                            int column2 = Integer.parseInt(parts[1]);
+                            var x =new ChessPosition(row1,column1);
+                            var piece= mygame.getBoard().getPiece(x);
+                            var f = x.getRow();
+                            var d = x.getColumn();
+                            var validmoves = mygame.validMoves(x);
+                            for(var move : validmoves) {
+                                var z = move.getEndPosition().getRow();
+                                var y =move.getEndPosition().getColumn();
+                                if(move.getEndPosition().getRow()+1 == row2 && move.getEndPosition().getColumn()+1==column2){
+                                    mygame.makeMove(move);
+                                    if(WHITE!=null){
+                                        System.out.println(mygame.getBoard().toString1(ChessGame.TeamColor.WHITE,null));
+                                    }
+                                    else if(BLACK!=null){
+                                        System.out.println(mygame.getBoard().toString1(ChessGame.TeamColor.BLACK,null));
+                                    }
+                                    break;
+                                }}
 
+
+                        } catch (InvalidMoveException e) {
+                            throw new RuntimeException("move not legal");
+                        }
+                    }
+                }
                 else if (Objects.equals(cmd, "observe")) {
                     if (params.length == 1) {
                         try{
                             var x = myserverf.observer(auth.authToken(), new wrapper("", params[0]));
                             System.out.println("\n");
-                            var myboard = new Gson().fromJson(x.toString(), GameData.class).game().getBoard();
-                            System.out.println(myboard.toString1(ChessGame.TeamColor.WHITE,null));
-                            System.out.println(myboard.toString1(ChessGame.TeamColor.BLACK,null));
+                            mygame = new Gson().fromJson(x.toString(), GameData.class).game();
+                            System.out.println(mygame.getBoard().toString1(ChessGame.TeamColor.WHITE,null));
+                            System.out.println(mygame.getBoard().toString1(ChessGame.TeamColor.BLACK,null));
                             System.out.println("success");
                         }
                         catch (ResponseException e){
