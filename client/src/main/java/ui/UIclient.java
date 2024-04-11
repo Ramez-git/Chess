@@ -12,9 +12,7 @@ import model.wrapper;
 import server.Server;
 import server.ServerFacade;
 
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 
 import static ui.EscapeSequences.*;
 
@@ -83,8 +81,43 @@ public class UIclient {
                 else if (Objects.equals(cmd, "redraw")){
                     System.out.println(mygame.getBoard().toString1(ChessGame.TeamColor.WHITE,null));
                     System.out.println(mygame.getBoard().toString1(ChessGame.TeamColor.BLACK,null));
+                } else if (Objects.equals(cmd, "resign")) {
+                System.out.println("are you sure?");
+                if(Objects.equals(input.nextLine(), "yes")){
+                    System.out.println("success");
+                    WHITE=null;
+                    BLACK=null;
+                    mygame=null;
+                }} else if (Objects.equals(cmd, "highlight")) {
+                    if (params.length == 1) {
+                    try{
+                        String[] parts = params[0].split(",");
+                        int row1 = Integer.parseInt(parts[0]);
+                        int column1 = Integer.parseInt(parts[1]);
+                        var x =new ChessPosition(row1,column1);
+                        var validmoves = mygame.validMoves(x);
+                        Collection<ChessPosition> moves = new ArrayList<>(List.of());
+                        for(var move : validmoves) {
+                            moves.add(move.getEndPosition());
+                        }
+                        if(WHITE!=null) {
+                            System.out.println(mygame.getBoard().toString1(ChessGame.TeamColor.WHITE, moves));
+                        }
+                        else{
+                            System.out.println(mygame.getBoard().toString1(ChessGame.TeamColor.BLACK, moves));
+                        }
+                    } catch (RuntimeException e){
+                        if(WHITE!=null) {
+                            System.out.println(mygame.getBoard().toString1(ChessGame.TeamColor.WHITE, null));
+                        }
+                        else{
+                            System.out.println(mygame.getBoard().toString1(ChessGame.TeamColor.BLACK, null));
+                        }
+                    }
+                    }
                 }
-                else if (Objects.equals(cmd, "join")) {
+
+                 else if (Objects.equals(cmd, "join")) {
                     if (params.length == 2) {
                         try {
                                 var x = myserverf.joingame(auth.authToken(), new wrapper(params[1], params[0]));
@@ -125,13 +158,8 @@ public class UIclient {
                             int row2 = Integer.parseInt(parts[0]);
                             int column2 = Integer.parseInt(parts[1]);
                             var x =new ChessPosition(row1,column1);
-                            var piece= mygame.getBoard().getPiece(x);
-                            var f = x.getRow();
-                            var d = x.getColumn();
                             var validmoves = mygame.validMoves(x);
                             for(var move : validmoves) {
-                                var z = move.getEndPosition().getRow();
-                                var y =move.getEndPosition().getColumn();
                                 if(move.getEndPosition().getRow()+1 == row2 && move.getEndPosition().getColumn()+1==column2){
                                     mygame.makeMove(move);
                                     if(WHITE!=null){
