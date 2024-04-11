@@ -52,6 +52,7 @@ public class Server {
         Spark.init();
         Spark.awaitInitialization();
         //making endpoints
+        Spark.webSocket("/connect", new WebSocketHandler());
         Spark.post("/user", this::addUser);
         Spark.post("/session", this::loginUser);
         Spark.post("/game", this::createGame);

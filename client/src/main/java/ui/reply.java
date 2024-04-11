@@ -12,7 +12,12 @@ import model.GameData;
 import model.UserData;
 import model.wrapper;
 import server.ServerFacade;
+import websocket.webfacade;
 
+import javax.websocket.DeploymentException;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.rmi.ServerException;
 import java.util.*;
 
 import static ui.EscapeSequences.*;
@@ -20,6 +25,7 @@ import static ui.EscapeSequences.*;
 public class reply {
     private Scanner input;
     private UIclient currclient;
+    private webfacade webf;
 
     public reply(String serverurl) throws DataAccessException {
 
@@ -114,17 +120,23 @@ public class reply {
                                 currclient.mygame = new Gson().fromJson(x.toString(), GameData.class).game();
                                 System.out.println(currclient.mygame.getBoard().toString1(ChessGame.TeamColor.WHITE, null));
                                 currclient.clientstate=states.WHITE;
-                                currclient.game = params[0];
+                                this.webf = new webfacade(currclient);
+                                this.webf.joinPlayer(currclient.auth.authToken(), Integer.parseInt(params[0]), ChessGame.TeamColor.WHITE);
+                                currclient.id=Integer.parseInt(params[0]);
                             } else {
                                 var mygame = new Gson().fromJson(x.toString(), GameData.class).game().getBoard();
                                 System.out.println(mygame.toString1(ChessGame.TeamColor.BLACK, null));
+                                this.webf = new webfacade(currclient);
+                                this.webf.joinPlayer(currclient.auth.authToken(), Integer.parseInt(params[0]), ChessGame.TeamColor.BLACK);
+                                currclient.id=Integer.parseInt(params[0]);
                                 currclient.clientstate=states.BLACK;
-                                currclient.game = params[0];
                             }
                             currclient.game = params[0];
 
                         } catch (ResponseException e) {
                             System.out.println("err");
+                        } catch (DeploymentException | URISyntaxException | IOException e) {
+                            throw new RuntimeException(e);
                         }
                     } else {
                         System.out.println("err");
@@ -152,6 +164,7 @@ public class reply {
                                     } else if (currclient.clientstate==states.BLACK) {
                                         System.out.println(currclient.mygame.getBoard().toString1(ChessGame.TeamColor.BLACK, null));
                                     }
+                                    webf.makeMove(currclient.auth.authToken(),currclient.id,move);
                                     break;
                                 }
                             }
@@ -159,6 +172,8 @@ public class reply {
 
                         } catch (InvalidMoveException e) {
                             throw new RuntimeException("move not legal");
+                        } catch (ServerException e) {
+                            throw new RuntimeException(e);
                         }
                     }
                 } else if (Objects.equals(cmd, "observe")) {
@@ -170,9 +185,14 @@ public class reply {
                             System.out.println(currclient.mygame.getBoard().toString1(ChessGame.TeamColor.WHITE, null));
                             System.out.println(currclient.mygame.getBoard().toString1(ChessGame.TeamColor.BLACK, null));
                             currclient.clientstate = states.OBSERVING;
+                            this.webf = new webfacade(currclient);
+                            this.webf.joinObserver(currclient.auth.authToken(), Integer.parseInt(params[0]));
                             System.out.println("success");
+                            currclient.id=Integer.parseInt(params[0]);
                         } catch (ResponseException e) {
                             System.out.println("err");
+                        } catch (DeploymentException | URISyntaxException | IOException e) {
+                            throw new RuntimeException(e);
                         }
                     } else {
                         System.out.println("err");

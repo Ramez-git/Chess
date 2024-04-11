@@ -1,5 +1,8 @@
 package webSocketMessages.userCommands;
 
+import chess.ChessGame;
+import chess.ChessMove;
+
 import java.util.Objects;
 
 /**
@@ -47,5 +50,49 @@ public class UserGameCommand {
     @Override
     public int hashCode() {
         return Objects.hash(getCommandType(), getAuthString());
+    }
+    public static class MakeMoveCommand extends UserGameCommand {
+        public int gameID;
+        public ChessMove move;
+        public MakeMoveCommand(String authToken, int gameID, ChessMove move) {
+            super(authToken);
+            this.commandType = CommandType.MAKE_MOVE;
+            this.gameID = gameID;
+            this.move = move;
+        }
+}
+    public static class JoinPlayerCommand extends UserGameCommand {
+        public int gameID;
+        public ChessGame.TeamColor playerColor;
+        public JoinPlayerCommand(String authToken, int gameID, ChessGame.TeamColor playerColor) {
+            super(authToken);
+            this.commandType = CommandType.JOIN_PLAYER;
+            this.gameID = gameID;
+            this.playerColor = playerColor;
+        }
+    }
+    public static class JoinObserverCommand extends UserGameCommand {
+        public int gameID;
+        public JoinObserverCommand(String authToken, int gameID) {
+            super(authToken);
+            this.commandType = CommandType.JOIN_OBSERVER;
+            this.gameID = gameID;
+        }
+    }
+    public static class LeaveCommand extends UserGameCommand {
+        public int gameID;
+        public LeaveCommand(String authToken, int gameID) {
+            super(authToken);
+            this.commandType = CommandType.LEAVE;
+            this.gameID = gameID;
+        }
+    }
+    public static class ResignCommand extends UserGameCommand {
+        public int gameID;
+        public ResignCommand(String authToken, int gameID) {
+            super(authToken);
+            this.commandType = CommandType.RESIGN;
+            this.gameID = gameID;
+        }
     }
 }

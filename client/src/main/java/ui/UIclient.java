@@ -23,6 +23,7 @@ public class UIclient {
     public AuthData auth;
     public String game;
     public Server server;
+    public int id;
     public ChessGame mygame;
     public final reply reply;
     public UIclient(String URL, ui.reply reply) throws DataAccessException {
