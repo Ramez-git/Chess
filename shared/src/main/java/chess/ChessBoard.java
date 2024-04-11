@@ -1,6 +1,6 @@
 package chess;
 
-import java.util.Arrays;
+import java.util.*;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -102,4 +102,60 @@ public class ChessBoard {
     public void removePiece(ChessPosition myPosition) {
         chessboard[myPosition.getRow()][myPosition.getColumn()] = null;
     }
+    public String toString1(ChessGame.TeamColor Color, Collection<ChessPosition> highlighted) {
+        var sb = new StringBuilder();
+        String letters = "";
+        int[] columns = new int[0];
+        int[] rows = new int[0];
+        String sq = "";
+
+
+        try {
+            if (Color == ChessGame.TeamColor.WHITE) {
+            sq = "\u001b[30;47m";
+            letters = "    a  b  c  d  e  f  g  h    ";
+            columns = new int[]{0, 1, 2, 3, 4, 5, 6, 7};
+            rows = new int[]{7, 6, 5, 4, 3, 2, 1, 0};
+            }
+            else if(Color == ChessGame.TeamColor.BLACK){
+                letters = "    h  g  f  e  d  c  b  a    ";
+                columns = new int[]{7, 6, 5, 4, 3, 2, 1, 0};
+                rows = new int[]{0, 1, 2, 3, 4, 5, 6, 7};
+            }
+            sb.append(letters).append("\u001b[0m").append(" \n");
+            for (int i : rows) {
+                var row = " " + (i + 1) + " ";
+                sb.append(row).append("\u001b[0m");
+                for (var j : columns) {
+                    var sqcolor = sq;
+                    if (highlighted != null && highlighted.contains(new ChessPosition(i + 1, j + 1))) {
+                        sqcolor = "\u001b[32;43m";
+                    }
+                    var piece = this.chessboard[i][j];
+                    if (piece != null) {
+                        var color = (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ? "\u001b[1;34m" : "\u001b[1;31m";
+                        var p = pieces.get(piece.getPieceType());
+                        sb.append(sqcolor).append(color).append(" ").append(p).append(" ").append("\u001b[0m");
+                    } else {
+                        sb.append(sqcolor).append("   ").append("\u001b[0m");
+                    }
+                    sq = sq.equals("\u001b[37;40m") ? "\u001b[30;47m" : "\u001b[37;40m";
+                }
+                sb.append(row).append("\u001b[0m").append('\n');
+                sq = sq.equals("\u001b[37;40m") ? "\u001b[30;47m" : "\u001b[37;40m";
+            }
+            sb.append(letters).append("\u001b[0m").append("\n");
+        } catch (Exception e) {
+            System.out.println("err");
+        }
+        return sb.toString();
+    }
+    private static final Map<ChessPiece.PieceType, String> pieces = Map.of(
+            ChessPiece.PieceType.KING, "K",
+            ChessPiece.PieceType.QUEEN, "Q",
+            ChessPiece.PieceType.BISHOP, "B",
+            ChessPiece.PieceType.KNIGHT, "N",
+            ChessPiece.PieceType.ROOK, "R",
+            ChessPiece.PieceType.PAWN, "P"
+    );
 }

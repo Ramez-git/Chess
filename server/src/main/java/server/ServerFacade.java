@@ -17,6 +17,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
 
 public class ServerFacade {
     private final String serverUrl;
@@ -74,11 +75,27 @@ public class ServerFacade {
     }
     public String listgames1(String auth) throws ResponseException {
         var x = listgames(auth);
-        return Arrays.toString(x);
+        StringBuilder result = new StringBuilder();
+        result.append("ID\twhiteUsername\tblackUsername\tgameName\n");
+        for (int i = 0; i < x.length; i++) {
+            var obj = x[i];
+            obj = new Gson().fromJson(String.valueOf(obj),GameData.class);
+            result.append(obj.gameID()).append("\t")
+                    .append(obj.whiteUsername()).append("\t")
+                    .append(obj.blackUsername()).append("\t")
+                    .append(obj.gameName());
+            if (i < x.length - 1) {
+                result.append("\n");
+            }
+        }
+        return result.toString();
     }
 
     public Object joingame(String auth, Object color) throws ResponseException {
-        return this.makeRequestwithauthandbody("PUT", "/game", color, Object.class, auth);
+        this.makeRequestwithauthandbody("PUT", "/game", color, Object.class, auth);
+        var y = (wrapper) color;
+        var x= Integer.parseInt(y.getGameID());
+        return getgame(auth,x);
     }
     public Object observer(String auth, Object ID) throws ResponseException {
         this.makeRequestwithauthandbody("PUT", "/game", ID, null, auth);

@@ -16,7 +16,8 @@ public class ChessGame {
     private ChessBoard board;
 
     public ChessGame() {
-
+    this.board = new ChessBoard();
+    board.resetBoard();
     }
 
     @Override

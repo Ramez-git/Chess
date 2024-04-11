@@ -1,7 +1,6 @@
 package ui;
 
 import chess.ChessGame;
-import chess.ChessPosition;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import dataAccess.*;
@@ -12,12 +11,8 @@ import model.UserData;
 import model.wrapper;
 import server.Server;
 import server.ServerFacade;
-import service.AuthService;
-import service.GameService;
-import service.UserService;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -39,72 +34,6 @@ public class UIclient {
         System.out.println(BLACK_QUEEN + " Welcome to 240 chess. Type Help to get started. " + BLACK_QUEEN);
         input = new Scanner(System.in);
 
-    }
-
-    public static void printChessboardWhite() {
-        char[][] letters = {
-                {'r', 'n', 'b', 'q', 'k', 'b', 'n', 'e'},
-                {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
-                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
-                {'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'}
-        };
-        System.out.println(" a b c d e f g h");
-        for (int i = 0; i < 8; i++) {
-            System.out.print(i + 1);
-            for (int j = 0; j < 8; j++) {
-                if ((i + j) % 2 == 0) {
-                    System.out.print("\u001B[47m");
-                } else {
-                    System.out.print("\u001B[40m");
-                }
-                if (i <= 5) {
-                    System.out.print(SET_TEXT_COLOR_RED + letters[i][j] + " ");
-                } else {
-                    System.out.print(SET_TEXT_COLOR_BLUE + letters[i][j] + " ");
-                }
-
-            }
-            System.out.println("\u001B[0m");
-        }
-        System.out.println(" a b c d e f g h");
-    }
-
-    public static void printChessboardBlack() {
-        char[][] letters = {
-                {'R', 'N', 'B', 'K', 'Q', 'B', 'N', 'R'},
-                {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
-                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
-                {'r', 'n', 'b', 'k', 'q', 'b', 'n', 'r'}
-        };
-
-        System.out.println(" h g f e d c b a");
-        for (int i = 0; i < 8; i++) {
-            System.out.print(8 - i);
-            for (int j = 0; j < 8; j++) {
-                if ((i + j) % 2 == 0) {
-                    System.out.print("\u001B[47m");
-                } else {
-                    System.out.print("\u001B[40m");
-                }
-                if (i <= 5) {
-
-                    System.out.print(SET_TEXT_COLOR_BLUE + letters[i][j] + " ");
-                } else {
-                    System.out.print(SET_TEXT_COLOR_RED + letters[i][j] + " ");
-                }
-
-            }
-            System.out.println("\u001B[0m");
-        }
-        System.out.println(" h g f e d c b a");
     }
     public void run() throws ResponseException {
         var myserverf = new ServerFacade(8080);
@@ -129,7 +58,9 @@ public class UIclient {
                             + SET_TEXT_COLOR_WHITE + " - playing chess");
                     System.out.println(SET_TEXT_COLOR_BLUE + "help"
                             + SET_TEXT_COLOR_WHITE + " - with possible commands\n");
-                } else if (Objects.equals(cmd, "create")) {
+                }
+
+                else if (Objects.equals(cmd, "create")) {
                     if (params.length == 1) {
                         try {
                             System.out.println(myserverf.creategame(new gamename1(params[0]), auth.authToken()));
@@ -150,16 +81,16 @@ public class UIclient {
                 } else if (Objects.equals(cmd, "join")) {
                     if (params.length == 2) {
                         try {
-                                myserverf.joingame(auth.authToken(), new wrapper(params[1], params[0]));
+                                var x = myserverf.joingame(auth.authToken(), new wrapper(params[1], params[0]));
                                 System.out.println("success");
                                 if (Objects.equals(params[1], "white")) {
-                                    printChessboardWhite();
-                                    printChessboardBlack();
+                                    var myboard = new Gson().fromJson(x.toString(), GameData.class).game().getBoard();
+                                    System.out.println(myboard.toString1(ChessGame.TeamColor.WHITE,null));
                                     WHITE = auth.authToken();
                                     game = params[0];
                                 } else {
-                                    printChessboardBlack();
-                                    printChessboardWhite();
+                                    var myboard = new Gson().fromJson(x.toString(), GameData.class).game().getBoard();
+                                    System.out.println(myboard.toString1(ChessGame.TeamColor.BLACK,null));
                                     BLACK = auth.authToken();
                                     game = params[0];
                                 }
@@ -173,20 +104,15 @@ public class UIclient {
                     }
                 }
 
-
-
                 else if (Objects.equals(cmd, "observe")) {
                     if (params.length == 1) {
                         try{
                             var x = myserverf.observer(auth.authToken(), new wrapper("", params[0]));
                             System.out.println("\n");
-                            var y = (GameData) x;
-//                            System.out.print(y.game().getBoard().getPiece(new ChessPosition(0,0)).getPieceType());
-//                            System.out.println();
-                            printChessboardWhite();
-                            printChessboardBlack();
+                            var myboard = new Gson().fromJson(x.toString(), GameData.class).game().getBoard();
+                            System.out.println(myboard.toString1(ChessGame.TeamColor.WHITE,null));
+                            System.out.println(myboard.toString1(ChessGame.TeamColor.BLACK,null));
                             System.out.println("success");
-//                        System.out.println(mygames.);
                         }
                         catch (ResponseException e){
                             System.out.println("err");}
