@@ -70,7 +70,6 @@ public class reply {
                 } else if (Objects.equals(cmd, "list")) {
                     try {
                         var f = myserverf.listgames1(currclient.auth.authToken());
-                        //System.out.println(f.get());
                         System.out.println(f);
                     } catch (ResponseException e) {
                         System.out.println("err");
