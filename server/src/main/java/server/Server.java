@@ -10,15 +10,11 @@ import model.UserData;
 import service.AuthService;
 import service.GameService;
 import service.UserService;
-import spark.Request;
-import spark.Response;
-import spark.Spark;
+import spark.*;
 
 import java.lang.module.ResolutionException;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class Server {
     private final UserService userService;
@@ -37,7 +33,11 @@ public class Server {
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
-
+        try{
+            Spark.webSocket("/connect", new WebSocketHandler());}
+        catch(Exception e){
+            throw new RuntimeException("err websocket connection init", e);
+        }
     }
 
     public int run(int desiredPort) {
@@ -52,7 +52,7 @@ public class Server {
         Spark.init();
         Spark.awaitInitialization();
         //making endpoints
-        Spark.webSocket("/connect", new WebSocketHandler());
+
         Spark.post("/user", this::addUser);
         Spark.post("/session", this::loginUser);
         Spark.post("/game", this::createGame);
@@ -60,6 +60,7 @@ public class Server {
         Spark.delete("/db", this::deleteEVERYTHING);
         Spark.put("/game", this::joinGame);
         Spark.get("/game", this::listGames);
+        Spark.awaitInitialization();
         //end making endpoints
         return Spark.port();
     }
@@ -210,24 +211,25 @@ public class Server {
         var gameService1 = gameService;
         var authService1 = authService;
         try {
+            if(game.playerColor == null) {
+                authService1.getusr(new AuthData(authstr, ""));
+                var x = Integer.parseInt(game.gameID);
+                gameService1.updateGame(x, null, null);
+                res.status(200);
+                return new Gson().toJson(game);
+            }
             if (Objects.equals(game.playerColor.toUpperCase(), "WHITE")) {
                 var x = Integer.parseInt(game.gameID);
                 var y = authService1.getusr(new AuthData(authstr, "")).username();
                 gameService1.updateGame(x, y, "check");
                 res.status(200);
-                return new Gson().toJson("success");
-            } else if (Objects.equals(game.playerColor.toUpperCase(), "BLACK")) {
+                return new Gson().toJson(game);
+            } else{
                 var x = Integer.parseInt(game.gameID);
                 var y = authService1.getusr(new AuthData(authstr, "")).username();
                 gameService1.updateGame(x, "check", y);
                 res.status(200);
-                return new Gson().toJson("success");
-            } else {
-                authService1.getusr(new AuthData(authstr, ""));
-                var x = Integer.parseInt(game.gameID);
-                gameService1.updateGame(x, null, null);
-                res.status(200);
-                return new Gson().toJson("success");
+                return new Gson().toJson(game);
             }
 
         } catch (DataAccessException | SQLException e) {

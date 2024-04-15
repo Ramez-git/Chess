@@ -2,6 +2,7 @@ package dataAccess;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import model.GameData;
 import service.AuthService;
 
@@ -81,6 +82,7 @@ public class mysqlGame implements DataAccessgame {
 
     }
 
+
     @Override
     public void updateGame(Integer ID, String White, String Black) throws DataAccessException {
         try {
@@ -131,8 +133,41 @@ public class mysqlGame implements DataAccessgame {
             throw new RuntimeException(e);
         }
     }
+    public void updateGame2(int gameID, ChessGame newGame) throws DataAccessException {
 
+        String statement = "UPDATE games SET json = ? WHERE id = ?";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.setString(1, new Gson().toJson(newGame));
+                preparedStatement.setInt(2, gameID);
 
+                int rowsAffected = preparedStatement.executeUpdate();
+                if (rowsAffected != 1) {
+                    throw new DataAccessException("err");
+                }
+            }
+        }
+        catch (SQLException ex) {
+            throw new DataAccessException(ex.getMessage());
+        }
+    }
+    public void leaveGame(int gameID, String color) throws DataAccessException{
+        String field = color.toLowerCase() + "_username";
+        String statement = String.format("UPDATE games SET %s = null WHERE id = ?", field);
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.setInt(1, gameID);
+
+                int rowsAffected = preparedStatement.executeUpdate();
+                if (rowsAffected != 1) {
+                    throw new DataAccessException("SQL: joining game affected " + rowsAffected + " rows");
+                }
+            }
+        }
+        catch (SQLException ex) {
+            throw new DataAccessException(ex.getMessage());
+        }
+    }
     @Override
     public Integer createGame(String Gamename) throws DataAccessException, SQLException {
         if (Gamename == null) {

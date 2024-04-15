@@ -156,7 +156,7 @@ public class serviceTests {
     @Test
     public void testGameService_ListGames_Positive() {
         assertDoesNotThrow(() -> {
-            GameData[] games = gameService.listGames();
+            GameData[] games = gameService.listGames().toArray(new GameData[0]);
             assertNotNull(games);
         });
     }

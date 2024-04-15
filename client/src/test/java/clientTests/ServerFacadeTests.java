@@ -1,5 +1,6 @@
 package clientTests;
 
+import com.google.gson.Gson;
 import exception.ResponseException;
 import model.UserData;
 import org.junit.jupiter.api.*;
@@ -33,7 +34,7 @@ public class ServerFacadeTests {
     @Order(1)
     public void registertestp() throws ResponseException {
         var myf = new ServerFacade(port);
-        auth = (myf.register(new UserData("new1", "new", "new"))).authToken();
+        auth = new Gson.(myf.register(new UserData("new1", "new", "new"))).authToken();
         assertDoesNotThrow(() -> auth);
     }
 

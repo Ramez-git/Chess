@@ -9,7 +9,7 @@ public class Main {
         var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
         System.out.println("♕ 240 Chess Client: " + piece);
         String serverurl = "http://localhost:8080";
-        var ui = new reply(serverurl);
+        var ui = new replier(serverurl);
         ui.run();
     }
 }

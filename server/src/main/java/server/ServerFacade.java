@@ -1,8 +1,6 @@
 package server;
 
 import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
-import com.google.protobuf.StringValue;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
@@ -16,8 +14,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
 
 public class ServerFacade {
     private final String serverUrl;
@@ -43,23 +39,23 @@ public class ServerFacade {
                 InputStreamReader reader = new InputStreamReader(respBody);
                 if (responseClass != null) {
                     response = new Gson().fromJson(reader, responseClass);
+
                 }
             }
         }
         return response;
     }
 
-    public AuthData register(UserData user) throws ResponseException {
-        return this.makeRequestwithbody("POST", "/user", user, AuthData.class);
+    public String register(UserData user) throws ResponseException {
+        return new Gson().toJson(this.makeRequestwithbody("POST", "/user", user, AuthData.class));
     }
 
-    public AuthData login(UserData user) throws ResponseException {
-        return this.makeRequestwithbody("POST", "/session", user, AuthData.class);
+    public String login(UserData user) throws ResponseException {
+        return new Gson().toJson(this.makeRequestwithbody("POST", "/session", user, AuthData.class));
     }
 
     public String creategame(Object gamename, String auth) throws ResponseException {
-        this.makeRequestwithauthandbody("POST", "/game", gamename, Object.class, auth);
-        return "success";
+        return new Gson().toJson(this.makeRequestwithauthandbody("POST", "/game", gamename, Object.class, auth));
     }
 
     public GameData[] listgames(String auth) throws ResponseException {
@@ -88,7 +84,7 @@ public class ServerFacade {
                 result.append("\n");
             }
         }
-        return result.toString();
+        return new Gson().toJson(result.toString());
     }
 
     public Object joingame(String auth, Object color) throws ResponseException {
@@ -103,11 +99,11 @@ public class ServerFacade {
         var x= Integer.parseInt(y.getGameID());
         return getgame(auth,x);
     }
-    public GameData getgame(String auth, int ID) throws ResponseException {
+    public String getgame(String auth, int ID) throws ResponseException {
         var mygames=listgames(auth);
         for(var mygame:mygames){
             if(mygame.gameID() == ID){
-                return mygame;
+                return new Gson().toJson(mygame);
             }
         }
         return null;
