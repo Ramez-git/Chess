@@ -3,7 +3,6 @@ package ui;
 import chess.ChessGame.TeamColor;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
-import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -81,13 +80,9 @@ public class user {
             repl.printMsg("Enter your password:");
             String password = repl.scanWord();
 
-            try {
-                var x =serverFacade.login(new UserData(username, password,""));
-                authToken = new Gson().fromJson(x, AuthData.class).authToken();
-                state = ui.state.LOGGEDIN;
-            } catch (ResponseException ex) {
-                repl.printErr("err");
-            }
+            var x =serverFacade.login(new UserData(username, password,""));
+            authToken = new Gson().fromJson(x, AuthData.class).authToken();
+            state = ui.state.LOGGEDIN;
         } else {
             repl.printMsg("err");
         }
@@ -102,12 +97,8 @@ public class user {
             repl.printMsg("password:");
             String password = repl.scanWord();
 
-            try {
-                authToken = new Gson().fromJson(serverFacade.register(new UserData(username, password, email)),AuthData.class).authToken();
-                state = ui.state.LOGGEDIN;
-            } catch (ResponseException e) {
-                repl.printErr("err");
-            }
+            authToken = new Gson().fromJson(serverFacade.register(new UserData(username, password, email)),AuthData.class).authToken();
+            state = ui.state.LOGGEDIN;
         } else {
             repl.printMsg("err");
         }
@@ -115,14 +106,10 @@ public class user {
 
     private void logout() {
         if (state == ui.state.LOGGEDIN) {
-            try {
-                serverFacade.logout(authToken);
-                authToken = null;
-                state = ui.state.LOGGEDOUT;
-                repl.printMsg("bye");
-            } catch (ResponseException e) {
-                repl.printErr("err");
-            }
+            serverFacade.logout(authToken);
+            authToken = null;
+            state = ui.state.LOGGEDOUT;
+            repl.printMsg("bye");
         } else {
             repl.printMsg("err");
         }
@@ -132,12 +119,8 @@ public class user {
         if (state == ui.state.LOGGEDIN) {
             repl.printMsg("name of your game:");
             String name = repl.scanWord();
-            try {
-                serverFacade.creategame(new gamename1(name), authToken);
-                repl.printMsg("success");
-            } catch (ResponseException e) {
-                repl.printMsg("err");
-            }
+            serverFacade.creategame(new gamename1(name), authToken);
+            repl.printMsg("success");
         } else {
             repl.printMsg("err");
         }
@@ -145,18 +128,15 @@ public class user {
 
     private void list() {
         if (state == ui.state.LOGGEDIN) {
-            try {
-                this.list = serverFacade.listgames1(authToken);
-                if (this.list.isEmpty()) {
-                    repl.printMsg("There are no games in the database");
-                    return;
-                }
-                else{
-                    repl.printMsg(list);
-                }
-        } catch (ResponseException e) {
-                repl.printMsg("err");
-            }} else {
+            this.list = serverFacade.listgames1(authToken);
+            if (this.list.isEmpty()) {
+                repl.printMsg("There are no games in the database");
+                return;
+            }
+            else{
+                repl.printMsg(list);
+            }
+        } else {
             repl.printMsg("err");
         }
     }
@@ -172,14 +152,10 @@ public class user {
                 return;
             }
 
-            try {
-                serverFacade.joingame(authToken, new wrapper(colorStr,String.valueOf(index)));
-                TeamColor color = colorStr.equals("white") ? TeamColor.WHITE : TeamColor.BLACK;
-                playclient = new ingame(new Gson().fromJson(serverFacade.getgame(authToken,index),GameData.class), color, this);
-                state = ui.state.GAMEPLAY;
-            } catch (ResponseException e) {
-                throw new RuntimeException(e);
-            }
+            serverFacade.joingame(authToken, new wrapper(colorStr,String.valueOf(index)));
+            TeamColor color = colorStr.equals("white") ? TeamColor.WHITE : TeamColor.BLACK;
+            playclient = new ingame(new Gson().fromJson(serverFacade.getgame(authToken,index),GameData.class), color, this);
+            state = ui.state.GAMEPLAY;
         } else {
             repl.printMsg("err");
         }
@@ -194,15 +170,11 @@ public class user {
             }
             repl.printMsg("game number:");
             int index = Integer.parseInt(repl.scanWord()) - 1;
-            try {
-                serverFacade.observer(authToken,new wrapper("",String.valueOf(index)));
+            serverFacade.observer(authToken,new wrapper("",String.valueOf(index)));
 
-                GameData gameData = new Gson().fromJson(serverFacade.getgame(authToken,index),GameData.class);
-                playclient = new ingame(gameData, null, this);
-                state = ui.state.GAMEPLAY;
-            } catch (ResponseException e) {
-                repl.printMsg("err");
-            }
+            GameData gameData = new Gson().fromJson(serverFacade.getgame(authToken,index),GameData.class);
+            playclient = new ingame(gameData, null, this);
+            state = ui.state.GAMEPLAY;
         } else {
             repl.printMsg("err");
         }

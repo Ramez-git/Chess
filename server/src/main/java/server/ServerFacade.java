@@ -1,7 +1,6 @@
 package server;
 
 import com.google.gson.Gson;
-import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -46,19 +45,19 @@ public class ServerFacade {
         return response;
     }
 
-    public String register(UserData user) throws ResponseException {
+    public String register(UserData user){
         return new Gson().toJson(this.makeRequestwithbody("POST", "/user", user, AuthData.class));
     }
 
-    public String login(UserData user) throws ResponseException {
+    public String login(UserData user)  {
         return new Gson().toJson(this.makeRequestwithbody("POST", "/session", user, AuthData.class));
     }
 
-    public String creategame(Object gamename, String auth) throws ResponseException {
+    public String creategame(Object gamename, String auth)  {
         return new Gson().toJson(this.makeRequestwithauthandbody("POST", "/game", gamename, Object.class, auth));
     }
 
-    public GameData[] listgames(String auth) throws ResponseException {
+    public GameData[] listgames(String auth)  {
         record res(GameData[] games){}
         var res= this.makeRequestwithoutbody("GET", "/game", res.class, auth);
         if (res!=null){
@@ -69,7 +68,7 @@ public class ServerFacade {
             return new GameData[0];
         }
     }
-    public String listgames1(String auth) throws ResponseException {
+    public String listgames1(String auth)  {
         var x = listgames(auth);
         StringBuilder result = new StringBuilder();
         result.append("ID\twhiteUsername\tblackUsername\tgameName\n");
@@ -87,19 +86,19 @@ public class ServerFacade {
         return new Gson().toJson(result.toString());
     }
 
-    public Object joingame(String auth, Object color) throws ResponseException {
+    public Object joingame(String auth, Object color)  {
         this.makeRequestwithauthandbody("PUT", "/game", color, Object.class, auth);
         var y = (wrapper) color;
         var x= Integer.parseInt(y.getGameID());
         return getgame(auth,x);
     }
-    public Object observer(String auth, Object ID) throws ResponseException {
+    public Object observer(String auth, Object ID)  {
         this.makeRequestwithauthandbody("PUT", "/game", ID, null, auth);
         var y = (wrapper) ID;
         var x= Integer.parseInt(y.getGameID());
         return getgame(auth,x);
     }
-    public String getgame(String auth, int ID) throws ResponseException {
+    public String getgame(String auth, int ID)  {
         var mygames=listgames(auth);
         for(var mygame:mygames){
             if(mygame.gameID() == ID){
@@ -109,11 +108,11 @@ public class ServerFacade {
         return null;
     }
 
-    public void logout(String auth) throws ResponseException {
+    public void logout(String auth)  {
         this.makeRequestwithoutbody("DELETE", "/session", Object.class, auth);
     }
 
-    private <T> T makeRequestwithbody(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
+    private <T> T makeRequestwithbody(String method, String path, Object request, Class<T> responseClass)  {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
@@ -125,11 +124,11 @@ public class ServerFacade {
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
         } catch (Exception ex) {
-            throw new ResponseException(500, ex.getMessage());
+            throw new RuntimeException("err");
         }
     }
 
-    private <T> T makeRequestwithoutbody(String method, String path, Class<T> responseClass, String auth) throws ResponseException {
+    private <T> T makeRequestwithoutbody(String method, String path, Class<T> responseClass, String auth)  {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
@@ -149,12 +148,12 @@ public class ServerFacade {
                     return null;
                 }}
         } catch (Exception ex) {
-            throw new ResponseException(500, ex.getMessage());
+            throw new RuntimeException("err");
         }
         return null;
     }
 
-    private <T> T makeRequestwithauthandbody(String method, String path, Object request, Class<T> responseClass, String auth) throws ResponseException {
+    private <T> T makeRequestwithauthandbody(String method, String path, Object request, Class<T> responseClass, String auth)  {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
@@ -170,15 +169,12 @@ public class ServerFacade {
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
         } catch (Exception ex) {
-            throw new ResponseException(500, ex.getMessage());
+            throw new RuntimeException("err");
         }
     }
 
-    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
+    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException {
         var status = http.getResponseCode();
-        if (!isSuccessful(status)) {
-            throw new ResponseException(status, "failure: " + status);
-        }
     }
 
     private boolean isSuccessful(int status) {
