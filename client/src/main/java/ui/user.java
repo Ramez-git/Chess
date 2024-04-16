@@ -7,7 +7,6 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 import model.wrapper;
-import server.ServerFacade;
 
 import static ui.EscapeSequences.SET_TEXT_COLOR_BLUE;
 import static ui.EscapeSequences.SET_TEXT_COLOR_WHITE;
