@@ -152,7 +152,7 @@ public class mysqlGame implements DataAccessgame {
         }
     }
     public void leaveGame(int gameID, String color) throws DataAccessException{
-        String field = color.toLowerCase() + "_username";
+        String field = color.toLowerCase() + "Username";
         String statement = String.format("UPDATE games SET %s = null WHERE id = ?", field);
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(statement)) {

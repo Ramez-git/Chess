@@ -2,6 +2,7 @@ package clientTests;
 
 import com.google.gson.Gson;
 import exception.ResponseException;
+import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import server.Server;
@@ -34,7 +35,7 @@ public class ServerFacadeTests {
     @Order(1)
     public void registertestp() throws ResponseException {
         var myf = new ServerFacade(port);
-        auth = new Gson.(myf.register(new UserData("new1", "new", "new"))).authToken();
+        auth = new Gson().fromJson(myf.register(new UserData("new15544", "new", "new")), AuthData.class).authToken();
         assertDoesNotThrow(() -> auth);
     }
 
@@ -50,9 +51,9 @@ public class ServerFacadeTests {
     @Order(3)
     public void logintestp() throws ResponseException {
         var myf = new ServerFacade(port);
-        auth = (myf.register(new UserData("new", "new", "new"))).authToken();
+        auth = new Gson().fromJson(myf.register(new UserData("new1", "new", "new")), AuthData.class).authToken();
         myf.logout(auth);
-        auth = myf.login(new UserData("new", "new", null)).authToken();
+        auth = new Gson().fromJson(myf.login(new UserData("new1", "new", null)),AuthData.class).authToken();
         assertDoesNotThrow(() -> auth);
     }
 
@@ -60,7 +61,7 @@ public class ServerFacadeTests {
     @Order(4)
     public void logouttestp() throws ResponseException {
         var myf = new ServerFacade(port);
-        auth = (myf.register(new UserData("ne1w", "new", "new"))).authToken();
+        auth = new Gson().fromJson(myf.register(new UserData("new1321341351", "new", "new")), AuthData.class).authToken();
         assertDoesNotThrow(() -> myf.logout(auth));
     }
 
@@ -83,9 +84,9 @@ public class ServerFacadeTests {
     @Test
     public void creategametestp() throws ResponseException {
         var myf = new ServerFacade(port);
-        auth = (myf.register(new UserData("new22", "new", "new"))).authToken();
+        auth = new Gson().fromJson(myf.register(new UserData("new4223", "new", "new")),AuthData.class).authToken();
         myf.logout(auth);
-        assertDoesNotThrow(() -> myf.login(new UserData("new22", "new", null)).authToken());
+        assertDoesNotThrow(() -> myf.login(new UserData("new4223", "new", null)));
     }
 
     @Test
@@ -97,9 +98,9 @@ public class ServerFacadeTests {
     @Test
     public void listgametestp() throws ResponseException {
         var myf = new ServerFacade(port);
-        auth = (myf.register(new UserData("new222", "new", "new"))).authToken();
+        auth =  new Gson().fromJson(myf.register(new UserData("new223", "new", "new")),AuthData.class).authToken();
         myf.logout(auth);
-        assertDoesNotThrow(() -> myf.login(new UserData("new222", "new", null)).authToken());
+        assertDoesNotThrow(() -> myf.login(new UserData("new223", "new", "")));
     }
 
     @Test
@@ -111,9 +112,9 @@ public class ServerFacadeTests {
     @Test
     public void observegametestp() throws ResponseException {
         var myf = new ServerFacade(port);
-        auth = (myf.register(new UserData("new1222", "new", "new"))).authToken();
+        auth =  new Gson().fromJson(myf.register(new UserData("new22342", "new", "new")),AuthData.class).authToken();
         myf.logout(auth);
-        assertDoesNotThrow(() -> myf.login(new UserData("new1222", "new", null)).authToken());
+        assertDoesNotThrow(() -> myf.login(new UserData("new22342", "new", null)));
     }
 
     @Test
@@ -125,9 +126,9 @@ public class ServerFacadeTests {
     @Test
     public void joingametestp() throws ResponseException {
         var myf = new ServerFacade(port);
-        auth = (myf.register(new UserData("new122", "new", "new"))).authToken();
+        auth =  new Gson().fromJson(myf.register(new UserData("new122", "new", "new")),AuthData.class).authToken();
         myf.logout(auth);
-        assertDoesNotThrow(() -> myf.login(new UserData("new122", "new", null)).authToken());
+        assertDoesNotThrow(() -> myf.login(new UserData("new122", "new", null)));
     }
 
     @Test

@@ -112,11 +112,8 @@ public class ingame {
         } catch (Exception e) {
             repl.printMsg("err");
         }
-        repl.printMsg("success, game is over");
-        if(Objects.equals(repl.scanWord(), "Join")){
-            repl.scanWord();
-            System.out.println("Game is over");
-    }}
+
+    }
 
     private void leave() {
         try {

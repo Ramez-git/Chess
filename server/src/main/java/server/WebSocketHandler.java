@@ -195,7 +195,7 @@ public class WebSocketHandler {
             }
             gameData.game().makeMove(new ChessMove(new ChessPosition(2, 2), new ChessPosition(4, 2), null));
             gameData.game().setTeamTurn(null);
-            mygame.updateGame2(gameData.gameID(), gameData.game());
+            mygame.updateGame2(gameData.gameID(), null);
             NotificationMessage notification = new NotificationMessage(authData.username() + " just resigned.");
             session.getRemote().sendString(new Gson().toJson(notification));
             connections.get(cmd.gameID).broadcast(authData.username(), notification);
